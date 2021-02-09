@@ -1,0 +1,8 @@
+# Essential arguments
+CONTAINER_PREDICT_PATH="home/end2end"
+
+# Other arguments
+MEAN_PIXEL_INTENSITY=44.4
+MODEL=inbreast_vgg16_[512-512-1024]x2_hybrid.h5
+NUM_PROCESSES=10
+PREPROCESS_FLAG=True

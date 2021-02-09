@@ -1,0 +1,4 @@
+# Essential arguments
+CONTAINER_PREDICT_PATH="/home/frcnn/frcnn_cad"
+
+# Other arguments

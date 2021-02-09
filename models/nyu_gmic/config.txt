@@ -1,0 +1,7 @@
+# Essential arguments
+CONTAINER_PREDICT_PATH="/home/gmic/GMIC"
+
+# Other arguments
+MODEL_INDEX=1
+NUM_PROCESSES=10
+PREPROCESS_FLAG=True

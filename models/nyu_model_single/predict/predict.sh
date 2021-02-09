@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# Generate predictions using the image level NYU Breast Cancer Classifier model
+
+HEATMAP_BATCH_SIZE="100"
+NUM_EPOCHS="10"
+USE_HEATMAPS="False"
+
+CONTAINER_PICKLE_FILE=$1
+CONTAINER_PATH_TO_IMAGES=$2
+CONTAINER_PREDICTION_FILE=$3
+DEVICE=$5
+
+python3 generate_predictions.py "${CONTAINER_PICKLE_FILE}" "${CONTAINER_PATH_TO_IMAGES}" "${DEVICE}" "${CONTAINER_PREDICTION_FILE}" "${NUM_EPOCHS}" "${HEATMAP_BATCH_SIZE}" "${USE_HEATMAPS}"
