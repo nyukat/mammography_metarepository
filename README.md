@@ -5,7 +5,7 @@ This metarepository is a project aimed to accelerate and standardize research an
 1. Developers of deep learning models can provide their implementations in the form of Docker images. This enables fair comparison with other models on various datasets.
 2. Data owners can evaluate multiple state-of-the-art models with very little user involvement and without the need to implement the models or their preprocessing pipelines.
 
-![Overview of metarepository](figs/overview.png "Overview")
+![Overview of metarepository](figs/metarepository-overview.JPG "Overview")
 
 ## Prerequisites
  * Docker 19.03.6
@@ -22,7 +22,7 @@ To avoid running the Docker container as root and avoid permission issues when a
 
 *Simple setup: single user*
 
-If it does not matter whether other users will have access to dockerized models, simply fill `user.txt` file with your username and user ID. On Linux, you can get your user ID by running `id -u <your_username>` command. Your `user.txt` file will look like the following:
+If it does not matter whether other users will have access to dockerized models, simply fill `users.txt` file with your username and user ID. On Linux, you can get your user ID by running `id -u <your_username>` command. Your `users.txt` file will look like the following (please note *two exact lines*):
 
 ```
 username, user_id
@@ -31,7 +31,7 @@ username, user_id
 
 *Access for multiple users*
 
-If you would like for multiple users to run models, they need to belong to the same group. For example, if `user1`, `user2`, and `user3` belong to `group1` and should be able to run the containers, then `user.txt` will look like the following:
+If you would like for multiple users to run models, they need to belong to the same group. For example, if `user1`, `user2`, and `user3` belong to `group1` and should be able to run the containers, then `users.txt` will look like the following:
 
 ```
 groupname, group_id
@@ -77,8 +77,35 @@ It is specific to the model and contains variables/parameters that can be change
 ## How do I use my own data set?
 If you are in possession of a data set that you would like to use with the included models, please read the following. There are two parts of a data set that the metarepository expects: *images* and a *data list*.
 
-*Images* must be saved in a PNG format and stored in a common directory.
+### Images
+*Images* must be saved in a PNG format and stored in a common directory. Models expect 16-bit PNGs. You can use a sample snippet to convert DICOM files to 16-bit PNGs as follows:
 
+```python
+import png
+import pydicom
+def save_dicom_image_as_png(dicom_filename, png_filename, bitdepth=12):
+    """
+    Save 12-bit mammogram from dicom as rescaled 16-bit png file.
+    :param dicom_filename: path to input dicom file.
+    :param png_filename: path to output png file.
+    :param bitdepth: bit depth of the input image. Set it to 12 for 12-bit mammograms.
+                     Set to 16 for 16-bit mammograms, etc.
+                     Make sure you are using correct bitdepth!
+    """
+    image = pydicom.read_file(dicom_filename).pixel_array
+    with open(png_filename, 'wb') as f:
+        writer = png.Writer(
+            height=image.shape[0],
+            width=image.shape[1],
+            bitdepth=bitdepth,
+            greyscale=True
+        )
+        writer.write(f, image.tolist())
+```
+
+If you are converting DICOM images into PNGs, make sure that mammograms are correctly presented after conversion. If there are any VOI LUT functions or Photometric Interpretation conversions necessary, you need to make sure the PNG represents an image after applying those.
+
+### Data list
 The *data list* is a pickle file (e.g. data.pkl) containing information for each exam. More specifically, the data list is a pickled list of dictionaries, where each dictionary represents a screening mammography exam. The information in one of these dictionaries is shown below.
 
 ```python
@@ -198,6 +225,8 @@ Please keep in mind that below results are shown only for reproduction purposes.
 | end2end           | 0.6   | 0.5   | 0.372 |
 | frcnn_cad         | 0.667 | 0.667 | 0.622 |
 
+### I am getting `ValueError: unsupported pickle protocol: 5`
+The reason for this error is when pickled data list file (e.g. data.pkl) is saved with Python 3.8 or later and highest (5) protocol. Models in the metarepository do not have the support of pickle protocol 5. Please save your data list file with protocol 4 or 3, e.g. `pickle.dump(datalist_dictionary, file, protocol=4)`.
 
 
 ## Submission Policy
