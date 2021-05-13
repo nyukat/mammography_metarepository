@@ -13,11 +13,10 @@ RUN apt-get update && apt-get install -y libglib2.0-0\
 
 WORKDIR /home/glam
 
-RUN git clone https://github.com/nyukat/GLAM.git
-#RUN git clone https://github.com/nyukat/GLAM.git \
-#    && cd GLAM \
-#    && git reset --hard 3bf4ce81dfa40553f108c8bfaf03bf006e082761 \
-#    && cd ..
+RUN git clone https://github.com/nyukat/GLAM.git \
+    && cd GLAM \
+    && git reset --hard a8e5a63f73afb10d0d73c7aba632b643a5dab13b \
+    && cd ..
 
 # Modify src/scripts/run_model.py line 148/149
 #RUN sed -i "149i \                if len(datum[view]) == 0: continue" /home/gmic/GMIC/src/scripts/run_model.py
