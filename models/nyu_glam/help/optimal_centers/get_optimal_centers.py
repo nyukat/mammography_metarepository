@@ -80,9 +80,6 @@ def get_optimal_centers(data_list, data_prefix, num_processes=1):
 
 
 def main(cropped_exam_list_path, data_prefix, output_exam_list_path, num_processes=1):
-    if os.path.exists(output_exam_list_path):
-        print(f"Warning: the optimal centers appear to be already extracted. To process the optimal centers again, please delete {output_exam_list_path}!")
-        return
 
     exam_list = pickling.unpickle_from_file(cropped_exam_list_path)
     data_list = data_handling.unpack_exam_into_images(exam_list, cropped=True)

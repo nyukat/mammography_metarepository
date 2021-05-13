@@ -20,6 +20,7 @@ EXAM_LIST_PATH="${PREPROCESSED_FOLDER}/nyu_gmic_${NAME}_center_data.pkl"
 if [ "${PREPROCESS_FLAG}" = "True" ]; then
     [ -d "${CROPPED_IMAGE_PATH}" ] && rm -r "${CROPPED_IMAGE_PATH}"
     [ -d "${OUTPUT_PATH}" ] && rm -r "${OUTPUT_PATH}"
+    [ -d "${EXAM_LIST_PATH}" ] && rm -r "${EXAM_LIST_PATH}"
 fi
 
 export PYTHONPATH=$(pwd):$PYTHONPATH

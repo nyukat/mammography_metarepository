@@ -256,12 +256,7 @@ def crop_mammogram(input_data_folder, exam_list_path, cropped_exam_list_path, ou
 
     image_list = data_handling.unpack_exam_into_images(exam_list)
 
-    if os.path.exists(output_data_folder):
-        # Prevent overwriting to an existing directory
-        print(f"Warning: the directory to save cropped images already exists. To process the data again, please delete the {output_data_folder} folder!")
-        return
-    else:
-        os.makedirs(output_data_folder)
+    os.makedirs(output_data_folder)
 
     crop_mammogram_one_image_func = partial(
         crop_mammogram_one_image_short_path,
