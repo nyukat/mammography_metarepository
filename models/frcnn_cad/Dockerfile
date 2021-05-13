@@ -34,7 +34,6 @@ RUN apt-get update && apt-get install -y curl \
 
 RUN apt-get install -y --no-install-recommends libboost-all-dev
 
-
 # Install pip3
 WORKDIR /home/pip_install
 RUN curl https://bootstrap.pypa.io/pip/3.5/get-pip.py -o get-pip.py \

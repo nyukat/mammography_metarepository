@@ -49,7 +49,7 @@ In order to run a model with included sample data, you need to populate the `use
     bash run.sh <model_name> <experiment_name> <img_path> <prepr_img_path> <label_path> <result_path> <device> <gpu_number>
 
 where the arguments represent:
-* `model_name` - Name of the model you want to evaluate. This is equivalent to a directory name in the `/models/` folder. As of now, available models are: `end2end`, `frcnn_cad`, `nyu_gmic`, `nyu_model`, `nyu_model_single`
+* `model_name` - Name of the model you want to evaluate. This is equivalent to a directory name in the `/models/` folder. As of now, available models are: `end2end`, `frcnn_cad`, `nyu_glam`, `nyu_gmic`, `nyu_model`, `nyu_model_single`
 * `experiment_name` - Name of the experiment; will be used to save results
 * `img_path` - path to the directory with input images
 * `prepr_img_path` - path to a directory where the preprocessed images created by the model/container will be stored
@@ -185,6 +185,10 @@ Breast-level prediction
     * [Paper](https://arxiv.org/pdf/1906.02846.pdf)
     * [Repository](https://github.com/nyukat/GMIC)
 
+* GLAM (image-level) (`nyu_glam`)
+    * [Paper](https://openreview.net/pdf?id=nBT8eNF7aXr)
+    * [Repository](https://github.com/nyukat/GLAM)
+
 * frcnn_cad (breast-level) (`frcnn_cad`)
     * [Paper](https://www.nature.com/articles/s41598-018-22437-z)
     * [Repository](https://github.com/riblidezso/frcnn_cad)
@@ -209,6 +213,7 @@ Please keep in mind that below results are shown only for reproduction purposes.
 
 | Model | ROC AUC  | Average precision | PR AUC |
 | ----------------- | ----- | ----- | ----- |
+| nyu_glam          | 0.7 | 0.515 | 0.451 |
 | nyu_gmic          | 0.867 | 0.859 | 0.851 |
 | nyu_model         | -     | -     | -     |
 | nyu_model_single  | 0.867 | 0.815 | 0.817 |
@@ -219,6 +224,7 @@ Please keep in mind that below results are shown only for reproduction purposes.
 
 | Model | ROC AUC  | Average precision | PR AUC |
 | ----------------- | ----- | ----- | ----- |
+| nyu_glam          | 0.733 | 0.589 | 0.461 |
 | nyu_gmic          | 0.867 | 0.867 | 0.85  |
 | nyu_model         | 0.867 | 0.866 | 0.85  |
 | nyu_model_single  | 0.933 | 0.916 | 0.903 |
