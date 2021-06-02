@@ -14,6 +14,6 @@ The inference pipeline of the model is shown below.
 ![glam architecture](nyu_glam.png)
 
 * There are 3 different hyper parameters in the config.txt file
-    * `MODEL_NAME` - Name of the model to use. Valid values include {`model_joint`, `model_sep`}, the former one is the joint-trained model, the latter one is the model that trained without joint training.
+    * `MODEL_NAME` - Name of the model to use. Valid values include {`model_joint`, `model_sep`}. Please refer to the paper for more details of joint/separate training.
     * `NUM_PROCESSES` - controls how many processes are used in the preprocessing of the images
     * `PREPROCESS_FLAG` - if set to True, forces the model to redo preprocessing even if it has already been completed. Otherwise, will use the preexisting preprocessed images.
