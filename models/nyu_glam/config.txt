@@ -1,0 +1,7 @@
+# Essential arguments
+CONTAINER_PREDICT_PATH="/home/glam/GLAM"
+
+# Other arguments
+MODEL_NAME=model_sep
+NUM_PROCESSES=10
+PREPROCESS_FLAG=True
