@@ -15,7 +15,7 @@ WORKDIR /home/glam
 
 RUN git clone https://github.com/nyukat/GLAM.git \
     && cd GLAM \
-    && git reset --hard 5d343f0c8b6ef9d8bcf7aa7ba9c309625ef34eba \
+    && git reset --hard 17a0019860441e2ea8d7b7c7e0aaeada735e871f \
     && cd ..
 
 # Modify src/scripts/run_model.py line 148/149
