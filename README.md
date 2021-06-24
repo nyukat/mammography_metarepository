@@ -211,25 +211,25 @@ Please keep in mind that below results are shown only for reproduction purposes.
 
 ##### Image level:
 
-| Model | ROC AUC  | Average precision | PR AUC |
-| ----------------- | ----- | ----- | ----- |
-| nyu_glam          | 0.7 | 0.515 | 0.451 |
-| nyu_gmic          | 0.867 | 0.859 | 0.851 |
-| nyu_model         | -     | -     | -     |
-| nyu_model_single  | 0.867 | 0.815 | 0.817 |
-| end2end           | 0.483 | 0.518 | 0.483 |
-| frcnn_cad         | 0.733 | 0.662 | 0.627 |
+| Model | ROC AUC  | PR AUC |
+| ----------------- | ----- | ----- |
+| nyu_glam          | 0.7   | 0.451 |
+| nyu_gmic          | 0.867 | 0.851 |
+| nyu_model         | -     | -     |
+| nyu_model_single  | 0.867 | 0.817 |
+| end2end           | 0.483 | 0.483 |
+| frcnn_cad         | 0.733 | 0.627 |
 
 ##### Breast level:
 
-| Model | ROC AUC  | Average precision | PR AUC |
-| ----------------- | ----- | ----- | ----- |
-| nyu_glam          | 0.733 | 0.589 | 0.461 |
-| nyu_gmic          | 0.867 | 0.867 | 0.85  |
-| nyu_model         | 0.867 | 0.866 | 0.85  |
-| nyu_model_single  | 0.933 | 0.916 | 0.903 |
-| end2end           | 0.6   | 0.5   | 0.372 |
-| frcnn_cad         | 0.667 | 0.667 | 0.622 |
+| Model | ROC AUC  | PR AUC |
+| ----------------- | ----- | ----- |
+| nyu_glam          | 0.733 | 0.461 |
+| nyu_gmic          | 0.867 | 0.85  |
+| nyu_model         | 0.867 | 0.85  |
+| nyu_model_single  | 0.933 | 0.903 |
+| end2end           | 0.6   | 0.372 |
+| frcnn_cad         | 0.667 | 0.622 |
 
 ### I am getting `ValueError: unsupported pickle protocol: 5`
 The reason for this error is when pickled data list file (e.g. data.pkl) is saved with Python 3.8 or later and highest (5) protocol. Models in the metarepository do not have the support of pickle protocol 5. Please save your data list file with protocol 4 or 3, e.g. `pickle.dump(datalist_dictionary, file, protocol=4)`.
