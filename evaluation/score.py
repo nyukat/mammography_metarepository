@@ -70,7 +70,7 @@ def get_breast_level_scores_from_image_level(prediction_file, pickle_file):
         right_images = 0
         for v in ['L-CC', 'L-MLO', 'R-CC', 'R-MLO']:
             # Skip over views that don't have any images
-            if len(d[v]) == 0:
+            if v not in d or len(d[v]) == 0:
                 continue
 
             if v[0] == 'L':

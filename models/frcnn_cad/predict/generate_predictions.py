@@ -34,10 +34,13 @@ def load_net(ptxt, w, use_gpu, device=0):
 
 # Try resizing before and after scaling
 def preprocess_image(image_path):
-    img = cv2.imread(image_path, -1)   
-   
-    img=255.*img/img.max()
-
+    img = cv2.imread(image_path, -1)  
+    
+    try:
+        img=255.*img/img.max()
+    except Exception as e:
+        print("EXCEPTION DURING PREPROCSESING")
+        print("Path: ", image_path)
 
     im=np.zeros((img.shape[0], img.shape[1]) + (3,), dtype=np.uint8)
     im[:,:,0], im[:,:,1], im[:,:,2]=img, img, img
