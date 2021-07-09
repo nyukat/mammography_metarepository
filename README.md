@@ -25,8 +25,8 @@ To avoid running the Docker container as root and avoid permission issues when a
 If it does not matter whether other users will have access to dockerized models, simply fill `users.txt` file with your username and user ID. On Linux, you can get your user ID by running `id -u <your_username>` command. Your `users.txt` file will look like the following (please note *two exact lines*):
 
 ```
-username, user_id
-username, user_id
+username,user_id
+username,user_id
 ```
 
 *Access for multiple users*
@@ -34,10 +34,10 @@ username, user_id
 If you would like for multiple users to run models, they need to belong to the same group. For example, if `user1`, `user2`, and `user3` belong to `group1` and should be able to run the containers, then `users.txt` will look like the following:
 
 ```
-groupname, group_id
-username1, user_id1
-username2, user_id2
-username3, user_id2
+groupname,group_id
+username1,user_id1
+username2,user_id2
+username3,user_id2
 ```
 
 When creating Dockerfiles for your own model, we suggest you take a similar approach to avoid running the container with root privileges.
