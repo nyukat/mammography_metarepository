@@ -18,18 +18,30 @@ def breast_or_image_level(prediction_file):
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
-        boot = resample(predictions, replace=True, n_samples=4)
-        print(3, boot)
-        boot = resample(predictions, replace=True, n_samples=4)
-        print(3, boot)
-        boot = resample(list(zip(predictions, labels)), replace=True, n_samples=4, random_state=1)
-        print(4, boot)
+        n_bootstraps = 3
+        b_roc_auc_list = []
+        b_pr_auc_list = []
+        for i in range(n_bootstraps):
+            boot = resample(list(zip(labels, predictions)), replace=True, n_samples=4)
+            print(4, boot)
+            b_labels, b_predictions = list(zip(*boot))
+            print(b_labels, b_predictions)
+
+            b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
+            b_roc_auc_list.append(b_roc_auc)
+            precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
+            b_pr_auc = metrics.auc(recall, precision)
+            b_pr_auc_list.append(b_pr_auc)
+            print(5, b_roc_auc, b_pr_auc)
+
+        print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
     precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
     pr_curve_path = plot_pr_curve(precision, recall, name)
     pr_auc = metrics.auc(recall, precision)
+    print(7, roc_auc, pr_auc)
 
     return roc_auc, pr_auc, roc_curve_path, pr_curve_path
 
