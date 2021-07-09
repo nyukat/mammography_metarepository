@@ -18,12 +18,12 @@ def breast_or_image_level(prediction_file):
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
-        n_bootstraps = 3
+        n_bootstraps = 30
         b_roc_auc_list = []
         b_pr_auc_list = []
         for i in range(n_bootstraps):
             boot = resample(list(zip(labels, predictions)), replace=True, n_samples=4)
-            print(4, boot)
+            # print(4, boot)
             b_labels, b_predictions = list(zip(*boot))
             print(b_labels, b_predictions)
 
@@ -32,7 +32,7 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
             b_pr_auc = metrics.auc(recall, precision)
             b_pr_auc_list.append(b_pr_auc)
-            print(5, b_roc_auc, b_pr_auc)
+            # print(5, b_roc_auc, b_pr_auc)
 
         print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
 
