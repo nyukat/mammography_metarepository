@@ -18,9 +18,9 @@ def breast_or_image_level(prediction_file):
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
-        boot = resample(predictions, replace=True, n_samples=4, random_state=1)
+        boot = resample(predictions, replace=True, n_samples=4)
         print(3, boot)
-        boot = resample(predictions, replace=True, n_samples=4, random_state=1)
+        boot = resample(predictions, replace=True, n_samples=4)
         print(3, boot)
         boot = resample(list(zip(predictions, labels)), replace=True, n_samples=4, random_state=1)
         print(4, boot)
