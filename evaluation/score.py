@@ -127,13 +127,13 @@ def main(pickle_file, prediction_file, bootstrapping=False):
         roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file,
                                                                                                                                     pickle_file)
         roc_auc_il, pr_auc_il, roc_curve_path_il, pr_curve_path_il = get_image_level_scores(prediction_file)
-        print("Image-level metrics \n AUROC: {} \n AUPRC: {} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
+        print("Image-level metrics \n AUROC: {:.2f} \n AUPRC: {:.2f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
                                                                                                      pr_auc_il, roc_curve_path_il,
                                                                                                      pr_curve_path_il))
     else:
         roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores(prediction_file, pickle_file)
 
-    print("Breast-level metrics \n AUROC: {} \n AUPRC: {} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_bl,
+    print("Breast-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_bl,
                                                                                                   pr_auc_bl, roc_curve_path_bl,
                                                                                                   pr_curve_path_bl))
     print("Prediction file: {}".format(prediction_file))
