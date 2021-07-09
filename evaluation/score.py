@@ -22,7 +22,7 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
         print(3, boot)
         boot = resample(predictions, replace=True, n_samples=4, random_state=1)
         print(3, boot)
-        boot = resample(zip(predictions, labels), replace=True, n_samples=4, random_state=1)
+        boot = resample(list(zip(predictions, labels)), replace=True, n_samples=4, random_state=1)
         print(4, boot)
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
