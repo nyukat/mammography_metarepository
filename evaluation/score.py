@@ -4,7 +4,7 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import sklearn.metrics as metrics
-from sklearn import cross_validation
+from sklearn.utils import resample
 
 
 def breast_or_image_level(prediction_file):
@@ -18,13 +18,13 @@ def breast_or_image_level(prediction_file):
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
-        bs = cross_validation.Bootstrap(n=len(labels), n_bootstraps=3, n_train=5, n_test=0)
-        for train_index, test_index in bs:
-            print("TRAIN:", train_index, "TEST:", test_index)
+        boot = resample(predictions, replace=True, n_samples=4, random_state=1)
+        print(3, boot)
+        boot = resample(predictions, replace=True, n_samples=4, random_state=1)
+        print(3, boot)
+        boot = resample(zip(predictions, labels), replace=True, n_samples=4, random_state=1)
+        print(4, boot)
 
-        bs = cross_validation.Bootstrap(n=len(labels), n_bootstraps=3, n_train=5, n_test=0)
-        for train_index, test_index in bs:
-            print("TRAIN:", train_index, "TEST:", test_index)
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
     precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
