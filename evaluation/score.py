@@ -25,7 +25,12 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             boot = resample(list(zip(labels, predictions)), replace=True, n_samples=4)
             # print(4, boot)
             b_labels, b_predictions = list(zip(*boot))
-            print(b_labels, b_predictions)
+            # print(b_labels, b_predictions)
+
+            if len(list(set(b_predictions))) == 1:
+                n_bootstraps -= 1
+                print("Single el!")
+                continue
 
             b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
             b_roc_auc_list.append(b_roc_auc)
@@ -34,6 +39,7 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             b_pr_auc_list.append(b_pr_auc)
             # print(5, b_roc_auc, b_pr_auc)
 
+        print(i, n_bootstraps)
         print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
