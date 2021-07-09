@@ -4,6 +4,7 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 import sklearn.metrics as metrics
+from sklearn import cross_validation
 
 
 def breast_or_image_level(prediction_file):
@@ -14,8 +15,16 @@ def breast_or_image_level(prediction_file):
         return "image"
 
 
-def generate_statistics(labels, predictions, name):
+def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
+    if bootstrapping:
+        bs = cross_validation.Bootstrap(n=len(labels), n_bootstraps=3, n_train=5, n_test=0)
+        for train_index, test_index in bs:
+            print("TRAIN:", train_index, "TEST:", test_index)
+
+        bs = cross_validation.Bootstrap(n=len(labels), n_bootstraps=3, n_train=5, n_test=0)
+        for train_index, test_index in bs:
+            print("TRAIN:", train_index, "TEST:", test_index)
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
     precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
@@ -27,14 +36,11 @@ def generate_statistics(labels, predictions, name):
 
 def get_image_level_scores(prediction_file, bootstrapping=False):
     prediction_df = pd.read_csv(prediction_file, header=0)
-    print(2, prediction_df)
     predictions = prediction_df['malignant_pred'].tolist()
-    print(3, predictions)
     labels = prediction_df['malignant_label'].tolist()
-    print(4, labels)
     name = prediction_file.split('.')[0] + "_image_level"
 
-    return generate_statistics(labels, predictions, name)
+    return generate_statistics(labels, predictions, name, bootstrapping)
 
 
 def get_breast_level_scores(prediction_file, pickle_file, bootstrapping=False):
@@ -51,7 +57,7 @@ def get_breast_level_scores(prediction_file, pickle_file, bootstrapping=False):
 
     name = prediction_file.split('.')[0] + "_breast_level"
 
-    return generate_statistics(labels, predictions, name)
+    return generate_statistics(labels, predictions, name, bootstrapping)
 
 
 def get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping=False):
@@ -98,7 +104,7 @@ def get_breast_level_scores_from_image_level(prediction_file, pickle_file, boots
     labels = left_labels + right_labels
     name = prediction_file.split('.')[0] + "_breast_level"
 
-    return generate_statistics(labels, predictions, name)
+    return generate_statistics(labels, predictions, name, bootstrapping)
 
 
 def plot_pr_curve(precision, recall, name):
