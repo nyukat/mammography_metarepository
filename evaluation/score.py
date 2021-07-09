@@ -120,7 +120,8 @@ def plot_roc_curve(preds, labels, name):
     return save_path
 
 
-def main(pickle_file, prediction_file):
+def main(pickle_file, prediction_file, bootstrapping=False):
+    print(1, bootstrapping)
     breast_or_image = breast_or_image_level(prediction_file)
     if breast_or_image == "image":
         roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file,
@@ -139,4 +140,4 @@ def main(pickle_file, prediction_file):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
