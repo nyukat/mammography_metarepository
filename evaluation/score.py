@@ -15,6 +15,7 @@ def breast_or_image_level(prediction_file):
 
 
 def generate_statistics(labels, predictions, name):
+    print(2, labels, predictions, name)
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
     precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
@@ -24,16 +25,19 @@ def generate_statistics(labels, predictions, name):
     return roc_auc, pr_auc, roc_curve_path, pr_curve_path
 
 
-def get_image_level_scores(prediction_file):
+def get_image_level_scores(prediction_file, bootstrapping=False):
     prediction_df = pd.read_csv(prediction_file, header=0)
+    print(2, prediction_df)
     predictions = prediction_df['malignant_pred'].tolist()
+    print(3, predictions)
     labels = prediction_df['malignant_label'].tolist()
+    print(4, labels)
     name = prediction_file.split('.')[0] + "_image_level"
 
     return generate_statistics(labels, predictions, name)
 
 
-def get_breast_level_scores(prediction_file, pickle_file):
+def get_breast_level_scores(prediction_file, pickle_file, bootstrapping=False):
     prediction_df = pd.read_csv(prediction_file, header=0)
     predictions = prediction_df['left_malignant'].tolist() + prediction_df['right_malignant'].tolist()
     with open(pickle_file, 'rb') as f:
@@ -50,7 +54,7 @@ def get_breast_level_scores(prediction_file, pickle_file):
     return generate_statistics(labels, predictions, name)
 
 
-def get_breast_level_scores_from_image_level(prediction_file, pickle_file):
+def get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping=False):
     with open(pickle_file, 'rb') as f:
         exam_dict = pickle.load(f)
 
@@ -120,18 +124,19 @@ def plot_roc_curve(preds, labels, name):
     return save_path
 
 
-def main(pickle_file, prediction_file, bootstrapping=False):
+def main(pickle_file, prediction_file, bootstrapping):
     print(1, bootstrapping)
+    if str(bootstrapping.lower()) == 'true':
+        bootstrapping = True
     breast_or_image = breast_or_image_level(prediction_file)
     if breast_or_image == "image":
-        roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file,
-                                                                                                                                    pickle_file)
-        roc_auc_il, pr_auc_il, roc_curve_path_il, pr_curve_path_il = get_image_level_scores(prediction_file)
-        print("Image-level metrics \n AUROC: {:.2f} \n AUPRC: {:.2f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
+        roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping)
+        roc_auc_il, pr_auc_il, roc_curve_path_il, pr_curve_path_il = get_image_level_scores(prediction_file, bootstrapping)
+        print("Image-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
                                                                                                      pr_auc_il, roc_curve_path_il,
                                                                                                      pr_curve_path_il))
     else:
-        roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores(prediction_file, pickle_file)
+        roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores(prediction_file, pickle_file, bootstrapping)
 
     print("Breast-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_bl,
                                                                                                   pr_auc_bl, roc_curve_path_bl,
