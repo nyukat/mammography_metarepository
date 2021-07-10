@@ -67,8 +67,8 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
 
         a, b = calc_confidence_interval(b_roc_auc_list)
         c, d = calc_confidence_interval(b_pr_auc_list)
-        print(f"bootstrap roc auc: {a:.3f} " + u"\u00B1" + f" {b:.3f}")
-        print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {c:.3f}")
+        print(f"bootstrap roc auc: {a:.3f} " + u"\u00B1" + f" {b:.2f}")
+        print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.2f}")
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
