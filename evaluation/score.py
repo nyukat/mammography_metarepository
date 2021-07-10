@@ -35,7 +35,7 @@ def calc_confidence_interval(sample, confidence=0.95):
 
 
 def generate_statistics(labels, predictions, name, bootstrapping=False):
-    print(2, labels, predictions, name)
+    # print(2, labels, predictions, name)
     print_str = "Image-level metrics:" if 'image_level' in name else "Breast-level metrics:"
     if bootstrapping:
         n_bootstraps = 2000
@@ -59,7 +59,7 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             # print(5, b_roc_auc, b_pr_auc)
 
         # print(i, n_bootstraps, len(b_roc_auc_list))
-        print(6, sum(b_roc_auc_list) / n_bootstraps, sum(b_pr_auc_list) / n_bootstraps)
+        # print(6, sum(b_roc_auc_list) / n_bootstraps, sum(b_pr_auc_list) / n_bootstraps)
 
         # perc_5_auc = np.percentile(b_roc_auc_list, 5)
         # perc_95_auc = np.percentile(b_roc_auc_list, 95)
@@ -187,7 +187,7 @@ def plot_roc_curve(preds, labels, name):
 
 
 def main(pickle_file, prediction_file, bootstrapping):
-    print(1, bootstrapping)
+    # print(1, bootstrapping)
     if str(bootstrapping.lower()) == 'true':
         bootstrapping = True
     breast_or_image = breast_or_image_level(prediction_file)
