@@ -24,37 +24,30 @@ def calc_confidence_interval(sample, confidence=0.95):
     # 1. The degree used in calculations is N - ddof
     stddev = std(sample, ddof=1)
     # Get the endpoints of the range that contains 95% of the distribution
-    t_bounds = t.interval(0.95, len(sample) - 1)
+    t_bounds = t.interval(confidence, len(sample) - 1)
     # sum mean to the confidence interval
     ci = [mean + critval * stddev / sqrt(len(sample)) for critval in t_bounds]
-    # print("Std: ", stddev)
-    # print("Mean: %f" % mean)
-    # print("Confidence Interval 95%%: %f, %f" % (ci[0], ci[1]))
+    # Get the diff between the middle and edge of the interval
     diff = ci[1] - mean
     return mean, diff
 
 
 def generate_statistics(labels, predictions, name, bootstrapping=False):
-    # print(2, labels, predictions, name)
-    print_str = "Image-level metrics:" if 'image_level' in name else "Breast-level metrics:"
+
+    print_str = "\nImage-level metrics:" if 'image_level' in name else "\nBreast-level metrics:"
     if bootstrapping:
         n_samples = len(labels)
         if n_samples < 8:
             print("Bootstrapping only available with at least 8 samples.")
         else:
-            print(123, n_samples)
             n_samples = min(n_samples, int((50 + n_samples) / 2))
-            print(123, n_samples)
-
             n_bootstraps = max(50, int(100000 / n_samples))
 
             b_roc_auc_list = []
             b_pr_auc_list = []
             for i in range(n_bootstraps):
                 boot = resample(list(zip(labels, predictions)), replace=True, n_samples=n_samples)
-                # print(4, boot)
                 b_labels, b_predictions = list(zip(*boot))
-                # print(b_labels, b_predictions)
 
                 if len(list(set(b_labels))) == 1:
                     n_bootstraps -= 1
@@ -65,22 +58,12 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
                 precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
                 b_pr_auc = metrics.auc(recall, precision)
                 b_pr_auc_list.append(b_pr_auc)
-                # print(5, b_roc_auc, b_pr_auc)
-
-            # print(i, n_bootstraps, len(b_roc_auc_list))
-            # print(6, sum(b_roc_auc_list) / n_bootstraps, sum(b_pr_auc_list) / n_bootstraps)
-
-            # perc_5_auc = np.percentile(b_roc_auc_list, 5)
-            # perc_95_auc = np.percentile(b_roc_auc_list, 95)
-            # stdd = statistics.stdev(b_roc_auc_list)
-            # print(7, perc_5_auc, perc_95_auc, stdd)
 
             a, b = calc_confidence_interval(b_roc_auc_list)
             c, d = calc_confidence_interval(b_pr_auc_list)
             print(f"{print_str}",
                   f"\n AUROC: {a:.3f} " + u"\u00B1" + f" {b:.3f}",
                   f"\n AUPRC: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
-            # print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
@@ -93,10 +76,6 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
           f"\n AUPRC: {pr_auc:.3f}",
           f"\n ROC Plot: {roc_curve_path}",
           f"\n PRC Plot: {pr_curve_path}")
-    # print(f"test set roc auc: {roc_auc:.3f}")
-    # print(f"test set pr auc: {pr_auc:.3f}")
-
-    return roc_auc, pr_auc, roc_curve_path, pr_curve_path
 
 
 def get_image_level_scores(prediction_file, bootstrapping=False):
@@ -105,7 +84,7 @@ def get_image_level_scores(prediction_file, bootstrapping=False):
     labels = prediction_df['malignant_label'].tolist()
     name = prediction_file.split('.')[0] + "_image_level"
 
-    return generate_statistics(labels, predictions, name, bootstrapping)
+    generate_statistics(labels, predictions, name, bootstrapping)
 
 
 def get_breast_level_scores(prediction_file, pickle_file, bootstrapping=False):
@@ -122,7 +101,7 @@ def get_breast_level_scores(prediction_file, pickle_file, bootstrapping=False):
 
     name = prediction_file.split('.')[0] + "_breast_level"
 
-    return generate_statistics(labels, predictions, name, bootstrapping)
+    generate_statistics(labels, predictions, name, bootstrapping)
 
 
 def get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping=False):
@@ -169,7 +148,7 @@ def get_breast_level_scores_from_image_level(prediction_file, pickle_file, boots
     labels = left_labels + right_labels
     name = prediction_file.split('.')[0] + "_breast_level"
 
-    return generate_statistics(labels, predictions, name, bootstrapping)
+    generate_statistics(labels, predictions, name, bootstrapping)
 
 
 def plot_pr_curve(precision, recall, name):
@@ -201,17 +180,11 @@ def main(pickle_file, prediction_file, bootstrapping):
         bootstrapping = True
     breast_or_image = breast_or_image_level(prediction_file)
     if breast_or_image == "image":
-        roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping)
-        roc_auc_il, pr_auc_il, roc_curve_path_il, pr_curve_path_il = get_image_level_scores(prediction_file, bootstrapping)
-        # print("Image-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
-        #                                                                                                      pr_auc_il, roc_curve_path_il,
-        #                                                                                                      pr_curve_path_il))
+        get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping)
+        get_image_level_scores(prediction_file, bootstrapping)
     else:
-        roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores(prediction_file, pickle_file, bootstrapping)
+        get_breast_level_scores(prediction_file, pickle_file, bootstrapping)
 
-    # print("Breast-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_bl,
-    #                                                                                                       pr_auc_bl, roc_curve_path_bl,
-    #                                                                                                       pr_curve_path_bl))
     print("Prediction file: {}".format(prediction_file))
 
 
