@@ -38,8 +38,9 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
     # print(2, labels, predictions, name)
     print_str = "Image-level metrics:" if 'image_level' in name else "Breast-level metrics:"
     if bootstrapping:
-        n_bootstraps = 5000
+        n_bootstraps = 10000
         n_samples = len(labels)
+        print(123, n_samples)
         b_roc_auc_list = []
         b_pr_auc_list = []
         for i in range(n_bootstraps):
