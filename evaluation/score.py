@@ -40,40 +40,43 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
     if bootstrapping:
         n_bootstraps = 10000
         n_samples = len(labels)
-        print(123, n_samples)
-        b_roc_auc_list = []
-        b_pr_auc_list = []
-        for i in range(n_bootstraps):
-            boot = resample(list(zip(labels, predictions)), replace=True, n_samples=n_samples)
-            # print(4, boot)
-            b_labels, b_predictions = list(zip(*boot))
-            # print(b_labels, b_predictions)
+        if n_samples < 10:
+            print("Bootstrapping only available with at least 10 samples.")
+        else:
+            print(123, n_samples)
+            b_roc_auc_list = []
+            b_pr_auc_list = []
+            for i in range(n_bootstraps):
+                boot = resample(list(zip(labels, predictions)), replace=True, n_samples=n_samples)
+                # print(4, boot)
+                b_labels, b_predictions = list(zip(*boot))
+                # print(b_labels, b_predictions)
 
-            if len(list(set(b_labels))) == 1:
-                n_bootstraps -= 1
-                continue
+                if len(list(set(b_labels))) == 1:
+                    n_bootstraps -= 1
+                    continue
 
-            b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
-            b_roc_auc_list.append(b_roc_auc)
-            precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
-            b_pr_auc = metrics.auc(recall, precision)
-            b_pr_auc_list.append(b_pr_auc)
-            # print(5, b_roc_auc, b_pr_auc)
+                b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
+                b_roc_auc_list.append(b_roc_auc)
+                precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
+                b_pr_auc = metrics.auc(recall, precision)
+                b_pr_auc_list.append(b_pr_auc)
+                # print(5, b_roc_auc, b_pr_auc)
 
-        # print(i, n_bootstraps, len(b_roc_auc_list))
-        # print(6, sum(b_roc_auc_list) / n_bootstraps, sum(b_pr_auc_list) / n_bootstraps)
+            # print(i, n_bootstraps, len(b_roc_auc_list))
+            # print(6, sum(b_roc_auc_list) / n_bootstraps, sum(b_pr_auc_list) / n_bootstraps)
 
-        # perc_5_auc = np.percentile(b_roc_auc_list, 5)
-        # perc_95_auc = np.percentile(b_roc_auc_list, 95)
-        # stdd = statistics.stdev(b_roc_auc_list)
-        # print(7, perc_5_auc, perc_95_auc, stdd)
+            # perc_5_auc = np.percentile(b_roc_auc_list, 5)
+            # perc_95_auc = np.percentile(b_roc_auc_list, 95)
+            # stdd = statistics.stdev(b_roc_auc_list)
+            # print(7, perc_5_auc, perc_95_auc, stdd)
 
-        a, b = calc_confidence_interval(b_roc_auc_list)
-        c, d = calc_confidence_interval(b_pr_auc_list)
-        print(f"{print_str}",
-              f"\n AUROC: {a:.3f} " + u"\u00B1" + f" {b:.3f}",
-              f"\n AUPRC: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
-        # print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
+            a, b = calc_confidence_interval(b_roc_auc_list)
+            c, d = calc_confidence_interval(b_pr_auc_list)
+            print(f"{print_str}",
+                  f"\n AUROC: {a:.3f} " + u"\u00B1" + f" {b:.3f}",
+                  f"\n AUPRC: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
+            # print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
