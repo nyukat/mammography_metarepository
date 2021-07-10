@@ -40,8 +40,8 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
     if bootstrapping:
         n_bootstraps = 10000
         n_samples = len(labels)
-        if n_samples < 10:
-            print("Bootstrapping only available with at least 10 samples.")
+        if n_samples < 8:
+            print("Bootstrapping only available with at least 8 samples.")
         else:
             print(123, n_samples)
             n_samples = min(n_samples, int((50 + n_samples) / 2))
