@@ -69,7 +69,7 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
 
         a,b = calc_confidence_interval(b_roc_auc_list)
         c,d = calc_confidence_interval(b_pr_auc_list)
-        print(f"bootstrap roc auc: {a} +- {b}")
+        print(f"bootstrap roc auc: {a}" + u"\u00B1" + f"{b}")
         print(f"bootstrap pr auc: {a} +- {b}")
         print(7, c, d)
 
