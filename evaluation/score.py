@@ -2,6 +2,7 @@ import pickle
 import sys
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import sklearn.metrics as metrics
 from sklearn.utils import resample
@@ -31,16 +32,28 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
                 n_bootstraps -= 1
                 continue
 
-            # b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
-            # b_roc_auc_list.append(b_roc_auc)
+            b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
+            b_roc_auc_list.append(b_roc_auc)
             precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
             b_pr_auc = metrics.auc(recall, precision)
             b_pr_auc_list.append(b_pr_auc)
             # print(5, b_roc_auc, b_pr_auc)
 
-        print(i, n_bootstraps)
-        # print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
-        print(6,  sum(b_pr_auc_list)/n_bootstraps)
+        print(i, n_bootstraps, len(b_roc_auc_list))
+        print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
+
+        perc_5_auc = np.percentile(b_roc_auc_list, 5)
+        perc_50_auc = np.percentile(b_roc_auc_list, 50)
+        perc_95_auc = np.percentile(b_roc_auc_list, 95)
+        print(7, perc_5_auc, perc_50_auc, perc_95_auc)
+
+        b_roc_auc_list = sorted(b_roc_auc_list)
+
+        sperc_5_auc = np.percentile(b_roc_auc_list, 5)
+        sperc_50_auc = np.percentile(b_roc_auc_list, 50)
+        sperc_95_auc = np.percentile(b_roc_auc_list, 95)
+        print(8, sperc_5_auc, sperc_50_auc, sperc_95_auc)
+
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
