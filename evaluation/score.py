@@ -1,15 +1,13 @@
 import pickle
-import statistics
 import sys
+from math import sqrt
 
 import matplotlib.pyplot as plt
-import numpy as np
 import pandas as pd
 import sklearn.metrics as metrics
-from sklearn.utils import resample
-from scipy.stats import t
 from numpy import average, std
-from math import sqrt
+from scipy.stats import t
+from sklearn.utils import resample
 
 
 def breast_or_image_level(prediction_file):
@@ -60,18 +58,17 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             # print(5, b_roc_auc, b_pr_auc)
 
         print(i, n_bootstraps, len(b_roc_auc_list))
-        print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
+        print(6, sum(b_roc_auc_list) / n_bootstraps, sum(b_pr_auc_list) / n_bootstraps)
 
         # perc_5_auc = np.percentile(b_roc_auc_list, 5)
         # perc_95_auc = np.percentile(b_roc_auc_list, 95)
         # stdd = statistics.stdev(b_roc_auc_list)
         # print(7, perc_5_auc, perc_95_auc, stdd)
 
-        a,b = calc_confidence_interval(b_roc_auc_list)
-        c,d = calc_confidence_interval(b_pr_auc_list)
-        print(f"bootstrap roc auc: {a:.3f}" + u"\u00B1" + f"{b}")
-        print(f"bootstrap pr auc: {a} +- {b}")
-        print(7, c, d)
+        a, b = calc_confidence_interval(b_roc_auc_list)
+        c, d = calc_confidence_interval(b_pr_auc_list)
+        print(f"bootstrap roc auc: {a:.3f} " + u"\u00B1" + f" {b:.3f}")
+        print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {c:.3f}")
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
@@ -188,14 +185,14 @@ def main(pickle_file, prediction_file, bootstrapping):
         roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping)
         roc_auc_il, pr_auc_il, roc_curve_path_il, pr_curve_path_il = get_image_level_scores(prediction_file, bootstrapping)
         print("Image-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
-                                                                                                     pr_auc_il, roc_curve_path_il,
-                                                                                                     pr_curve_path_il))
+                                                                                                             pr_auc_il, roc_curve_path_il,
+                                                                                                             pr_curve_path_il))
     else:
         roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores(prediction_file, pickle_file, bootstrapping)
 
     print("Breast-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_bl,
-                                                                                                  pr_auc_bl, roc_curve_path_bl,
-                                                                                                  pr_curve_path_bl))
+                                                                                                          pr_auc_bl, roc_curve_path_bl,
+                                                                                                          pr_curve_path_bl))
     print("Prediction file: {}".format(prediction_file))
 
 
