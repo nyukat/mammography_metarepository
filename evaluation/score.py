@@ -44,6 +44,9 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             print("Bootstrapping only available with at least 10 samples.")
         else:
             print(123, n_samples)
+            n_samples = min(n_samples, int((50 + n_samples) / 2))
+            print(123, n_samples)
+
             b_roc_auc_list = []
             b_pr_auc_list = []
             for i in range(n_bootstraps):
