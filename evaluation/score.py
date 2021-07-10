@@ -36,6 +36,7 @@ def calc_confidence_interval(sample, confidence=0.95):
 
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
+    print_str = "Image-level metrics:" if 'image_level' in name else "Breast-level metrics:"
     if bootstrapping:
         n_bootstraps = 2000
         b_roc_auc_list = []
@@ -67,8 +68,10 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
 
         a, b = calc_confidence_interval(b_roc_auc_list)
         c, d = calc_confidence_interval(b_pr_auc_list)
-        print(f"bootstrap roc auc: {a:.3f} " + u"\u00B1" + f" {b:.3f}")
-        print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
+        print(f"{print_str}",
+              f"\n AUROC: {a:.3f} " + u"\u00B1" + f" {b:.3f}",
+              f"\n AUPRC: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
+        # print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
@@ -76,8 +79,13 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
     pr_curve_path = plot_pr_curve(precision, recall, name)
     pr_auc = metrics.auc(recall, precision)
 
-    print(f"test set roc auc: {roc_auc:.3f}")
-    print(f"test set pr auc: {pr_auc:.3f}")
+    print(f"{print_str}",
+          f"\n AUROC: {roc_auc:.3f}",
+          f"\n AUPRC: {pr_auc:.3f}",
+          f"\n ROC Plot: {roc_curve_path}",
+          f"\n PRC Plot: {pr_curve_path}")
+    # print(f"test set roc auc: {roc_auc:.3f}")
+    # print(f"test set pr auc: {pr_auc:.3f}")
 
     return roc_auc, pr_auc, roc_curve_path, pr_curve_path
 
@@ -186,15 +194,15 @@ def main(pickle_file, prediction_file, bootstrapping):
     if breast_or_image == "image":
         roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping)
         roc_auc_il, pr_auc_il, roc_curve_path_il, pr_curve_path_il = get_image_level_scores(prediction_file, bootstrapping)
-        print("Image-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
-                                                                                                             pr_auc_il, roc_curve_path_il,
-                                                                                                             pr_curve_path_il))
+        # print("Image-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_il,
+        #                                                                                                      pr_auc_il, roc_curve_path_il,
+        #                                                                                                      pr_curve_path_il))
     else:
         roc_auc_bl, pr_auc_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores(prediction_file, pickle_file, bootstrapping)
 
-    print("Breast-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_bl,
-                                                                                                          pr_auc_bl, roc_curve_path_bl,
-                                                                                                          pr_curve_path_bl))
+    # print("Breast-level metrics \n AUROC: {:.3f} \n AUPRC: {:.3f} \n ROC Plot: {} \n PRC Plot: {}".format(roc_auc_bl,
+    #                                                                                                       pr_auc_bl, roc_curve_path_bl,
+    #                                                                                                       pr_curve_path_bl))
     print("Prediction file: {}".format(prediction_file))
 
 
