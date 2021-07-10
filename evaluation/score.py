@@ -38,7 +38,6 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
     # print(2, labels, predictions, name)
     print_str = "Image-level metrics:" if 'image_level' in name else "Breast-level metrics:"
     if bootstrapping:
-        n_bootstraps = 10000
         n_samples = len(labels)
         if n_samples < 8:
             print("Bootstrapping only available with at least 8 samples.")
@@ -46,6 +45,8 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             print(123, n_samples)
             n_samples = min(n_samples, int((50 + n_samples) / 2))
             print(123, n_samples)
+
+            n_bootstraps = max(50, int(100000 / n_samples))
 
             b_roc_auc_list = []
             b_pr_auc_list = []
