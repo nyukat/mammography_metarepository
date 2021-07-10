@@ -27,7 +27,7 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             b_labels, b_predictions = list(zip(*boot))
             # print(b_labels, b_predictions)
 
-            if len(list(set(b_predictions))) == 1:
+            if len(list(set(b_labels))) == 1:
                 n_bootstraps -= 1
                 print("Single el!")
                 continue
