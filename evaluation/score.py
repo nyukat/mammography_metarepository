@@ -27,9 +27,9 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             b_labels, b_predictions = list(zip(*boot))
             # print(b_labels, b_predictions)
 
-            # if len(list(set(b_labels))) == 1:
-            #     n_bootstraps -= 1
-            #     continue
+            if len(list(set(b_labels))) == 1:
+                n_bootstraps -= 1
+                continue
 
             # b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
             # b_roc_auc_list.append(b_roc_auc)
