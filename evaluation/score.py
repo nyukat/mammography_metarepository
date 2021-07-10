@@ -175,7 +175,7 @@ def plot_roc_curve(preds, labels, name):
 
 
 def main(pickle_file, prediction_file, bootstrapping):
-    # print(1, bootstrapping)
+
     if str(bootstrapping.lower()) == 'true':
         bootstrapping = True
     breast_or_image = breast_or_image_level(prediction_file)
