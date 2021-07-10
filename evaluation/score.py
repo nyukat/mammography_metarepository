@@ -18,7 +18,7 @@ def breast_or_image_level(prediction_file):
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
-        n_bootstraps = 1000
+        n_bootstraps = 10000
         b_roc_auc_list = []
         b_pr_auc_list = []
         for i in range(n_bootstraps):
@@ -29,7 +29,6 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
 
             if len(list(set(b_labels))) == 1:
                 n_bootstraps -= 1
-                print("Single el!")
                 continue
 
             b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
