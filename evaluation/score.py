@@ -1,4 +1,5 @@
 import pickle
+import statistics
 import sys
 
 import matplotlib.pyplot as plt
@@ -43,16 +44,10 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
         print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
 
         perc_5_auc = np.percentile(b_roc_auc_list, 5)
-        perc_50_auc = np.percentile(b_roc_auc_list, 50)
         perc_95_auc = np.percentile(b_roc_auc_list, 95)
-        print(7, perc_5_auc, perc_50_auc, perc_95_auc)
+        std = statistics.stdev(b_roc_auc_list)
+        print(7, perc_5_auc, perc_95_auc, std)
 
-        b_roc_auc_list = sorted(b_roc_auc_list)
-
-        sperc_5_auc = np.percentile(b_roc_auc_list, 5)
-        sperc_50_auc = np.percentile(b_roc_auc_list, 50)
-        sperc_95_auc = np.percentile(b_roc_auc_list, 95)
-        print(8, sperc_5_auc, sperc_50_auc, sperc_95_auc)
 
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
