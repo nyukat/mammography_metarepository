@@ -7,6 +7,9 @@ import numpy as np
 import pandas as pd
 import sklearn.metrics as metrics
 from sklearn.utils import resample
+from scipy.stats import t
+from numpy import average, std
+from math import sqrt
 
 
 def breast_or_image_level(prediction_file):
@@ -47,6 +50,19 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
         perc_95_auc = np.percentile(b_roc_auc_list, 95)
         std = statistics.stdev(b_roc_auc_list)
         print(7, perc_5_auc, perc_95_auc, std)
+
+        mean = average(b_roc_auc_list)
+        # evaluate sample variance by setting delta degrees of freedom (ddof) to
+        # 1. The degree used in calculations is N - ddof
+        stddev = std(b_roc_auc_list, ddof=1)
+        # Get the endpoints of the range that contains 95% of the distribution
+        t_bounds = t.interval(0.95, len(b_roc_auc_list) - 1)
+        # sum mean to the confidence interval
+        ci = [mean + critval * stddev / sqrt(len(b_roc_auc_list)) for critval in t_bounds]
+        print("Std: ", stddev, std)
+        print("Mean: %f" % mean)
+        print("Confidence Interval 95%%: %f, %f" % (ci[0], ci[1]))
+
 
 
 
