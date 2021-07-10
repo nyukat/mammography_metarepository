@@ -20,6 +20,23 @@ def breast_or_image_level(prediction_file):
         return "image"
 
 
+def calc_confidence_interval(sample, confidence=0.95):
+    mean = average(sample)
+    # evaluate sample variance by setting delta degrees of freedom (ddof) to
+    # 1. The degree used in calculations is N - ddof
+    stddev = std(sample, ddof=1)
+    # Get the endpoints of the range that contains 95% of the distribution
+    t_bounds = t.interval(0.95, len(sample) - 1)
+    # sum mean to the confidence interval
+    ci = [mean + critval * stddev / sqrt(len(sample)) for critval in t_bounds]
+    print("Std: ", stddev)
+    print("Mean: %f" % mean)
+    print("Confidence Interval 95%%: %f, %f" % (ci[0], ci[1]))
+    diff = ci[1] - mean
+    print(11, ci[1]-mean, mean-ci[0])
+    return mean, diff
+
+
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
@@ -51,20 +68,10 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
         stdd = statistics.stdev(b_roc_auc_list)
         print(7, perc_5_auc, perc_95_auc, stdd)
 
-        mean = average(b_roc_auc_list)
-        # evaluate sample variance by setting delta degrees of freedom (ddof) to
-        # 1. The degree used in calculations is N - ddof
-        stddev = std(b_roc_auc_list, ddof=1)
-        # Get the endpoints of the range that contains 95% of the distribution
-        t_bounds = t.interval(0.95, len(b_roc_auc_list) - 1)
-        # sum mean to the confidence interval
-        ci = [mean + critval * stddev / sqrt(len(b_roc_auc_list)) for critval in t_bounds]
-        print("Std: ", stddev, stdd)
-        print("Mean: %f" % mean)
-        print("Confidence Interval 95%%: %f, %f" % (ci[0], ci[1]))
-
-
-
+        a,b = calc_confidence_interval(b_roc_auc_list)
+        c,d = calc_confidence_interval(b_pr_auc_list)
+        print(8, a, b)
+        print(9, c, d)
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
