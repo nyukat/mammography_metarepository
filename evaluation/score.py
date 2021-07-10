@@ -18,7 +18,7 @@ def breast_or_image_level(prediction_file):
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
-        n_bootstraps = 200000
+        n_bootstraps = 20000
         b_roc_auc_list = []
         b_pr_auc_list = []
         for i in range(n_bootstraps):
@@ -27,19 +27,20 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             b_labels, b_predictions = list(zip(*boot))
             # print(b_labels, b_predictions)
 
-            if len(list(set(b_labels))) == 1:
-                n_bootstraps -= 1
-                continue
+            # if len(list(set(b_labels))) == 1:
+            #     n_bootstraps -= 1
+            #     continue
 
-            b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
-            b_roc_auc_list.append(b_roc_auc)
+            # b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
+            # b_roc_auc_list.append(b_roc_auc)
             precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
             b_pr_auc = metrics.auc(recall, precision)
             b_pr_auc_list.append(b_pr_auc)
             # print(5, b_roc_auc, b_pr_auc)
 
-        print(i, n_bootstraps, len(b_roc_auc_list))
-        print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
+        print(i, n_bootstraps)
+        # print(6, sum(b_roc_auc_list)/n_bootstraps, sum(b_pr_auc_list)/n_bootstraps)
+        print(6,  sum(b_pr_auc_list)/n_bootstraps)
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
