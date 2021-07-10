@@ -18,7 +18,7 @@ def breast_or_image_level(prediction_file):
 def generate_statistics(labels, predictions, name, bootstrapping=False):
     print(2, labels, predictions, name)
     if bootstrapping:
-        n_bootstraps = 20000
+        n_bootstraps = 400000
         b_roc_auc_list = []
         b_pr_auc_list = []
         for i in range(n_bootstraps):
