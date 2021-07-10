@@ -27,9 +27,9 @@ def calc_confidence_interval(sample, confidence=0.95):
     t_bounds = t.interval(0.95, len(sample) - 1)
     # sum mean to the confidence interval
     ci = [mean + critval * stddev / sqrt(len(sample)) for critval in t_bounds]
-    print("Std: ", stddev)
-    print("Mean: %f" % mean)
-    print("Confidence Interval 95%%: %f, %f" % (ci[0], ci[1]))
+    # print("Std: ", stddev)
+    # print("Mean: %f" % mean)
+    # print("Confidence Interval 95%%: %f, %f" % (ci[0], ci[1]))
     diff = ci[1] - mean
     return mean, diff
 
@@ -57,7 +57,7 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
             b_pr_auc_list.append(b_pr_auc)
             # print(5, b_roc_auc, b_pr_auc)
 
-        print(i, n_bootstraps, len(b_roc_auc_list))
+        # print(i, n_bootstraps, len(b_roc_auc_list))
         print(6, sum(b_roc_auc_list) / n_bootstraps, sum(b_pr_auc_list) / n_bootstraps)
 
         # perc_5_auc = np.percentile(b_roc_auc_list, 5)
@@ -67,15 +67,17 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
 
         a, b = calc_confidence_interval(b_roc_auc_list)
         c, d = calc_confidence_interval(b_pr_auc_list)
-        print(f"bootstrap roc auc: {a:.3f} " + u"\u00B1" + f" {b:.2f}")
-        print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.2f}")
+        print(f"bootstrap roc auc: {a:.3f} " + u"\u00B1" + f" {b:.3f}")
+        print(f"bootstrap pr auc: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
 
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
     precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
     pr_curve_path = plot_pr_curve(precision, recall, name)
     pr_auc = metrics.auc(recall, precision)
-    print(8, roc_auc, pr_auc)
+
+    print(f"test set roc auc: {roc_auc:.3f}")
+    print(f"test set pr auc: {pr_auc:.3f}")
 
     return roc_auc, pr_auc, roc_curve_path, pr_curve_path
 
