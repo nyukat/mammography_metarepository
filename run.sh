@@ -9,6 +9,7 @@ LOCAL_PICKLE_FILE=$5  # Copy into container before generating predictions - wher
 LOCAL_PREDICTION_PATH=$6  # Copy container prediction file to local prediction file
 DEVICE=$7  # gpu or cpu
 GPU=$8  # GPU to execute on
+BOOTSTRAPPING=$9  # whether to use bootstrapping
 
 get_groupname () {
     ENTRIES=()
@@ -154,7 +155,7 @@ run_model () {
     docker container rm "${DOCKER_ALIAS}"
     echo -e "\nEvaluating."
     cd ../..
-    python3 ./evaluation/score.py "${ABSOLUTE_PICKLE_FILE}" "${LOCAL_PREDICTION_FILE}"
+    python3 ./evaluation/score.py "${ABSOLUTE_PICKLE_FILE}" "${LOCAL_PREDICTION_FILE}" "${BOOTSTRAPPING}"
     echo -e "\n"
 }
 
