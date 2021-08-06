@@ -46,21 +46,22 @@ When creating Dockerfiles for your own model, we suggest you take a similar appr
 
 In order to run a model with included sample data, you need to populate the `users.txt` file, and then run the `run.sh` bash script, providing basic arguments:
 
-    bash run.sh <model_name> <experiment_name> <img_path> <prepr_img_path> <label_path> <result_path> <device> <gpu_number>
+    bash run.sh <model_name> <experiment_name> <img_path> <prepr_img_path> <label_path> <result_path> <device> <gpu_number> <bootstrap_flag>
 
 where the arguments represent:
-* `model_name` - Name of the model you want to evaluate. This is equivalent to a directory name in the `/models/` folder. As of now, available models are: `end2end`, `frcnn_cad`, `nyu_glam`, `nyu_gmic`, `nyu_model`, `nyu_model_single`
-* `experiment_name` - Name of the experiment; will be used to save results
+* `model_name` - name of the model you want to evaluate. This is equivalent to a directory name in the `/models/` folder. As of now, available models are: `end2end`, `frcnn_cad`, `nyu_glam`, `nyu_gmic`, `nyu_model`, `nyu_model_single`
+* `experiment_name` - name of the experiment; will be used to save results
 * `img_path` - path to the directory with input images
 * `prepr_img_path` - path to a directory where the preprocessed images created by the model/container will be stored
 * `label_path` - path to a pickle (.pkl) that contains the labels, see below for details
 * `result_path` - directory where the results (predictions and figures) should be saved
-* `device` - Either `gpu` or `cpu`. (Note: `frcnn_cad` model is GPU-only)
-* `gpu_number` - Which gpu to use, e.g. `0`, not required if `device==cpu`.
+* `device` - either `gpu` or `cpu`. (Note: `frcnn_cad` model is GPU-only)
+* `gpu_number` - which gpu to use, e.g. `0`, not required if `device==cpu`.
+* `bootstrap_flag` - by default, your results will have 95% confidence intervals calculated for areas under curves. If you do _not_ want bootstrap to be calculated, set the value to `no_bootstrap`
 
 An example command to run a NYU GMIC model on GPU:0 with the sample data included in this repository would look like the following:
 
-    bash run.sh nyu_gmic experiment01 sample_data/images/ sample_data/preprocessed_images/ sample_data/data.pkl predictions/ gpu 0
+    bash run.sh nyu_gmic experiment01 sample_data/images/ sample_data/preprocessed_images/ sample_data/data.pkl predictions/ gpu 0 no_bootstrap
   
 ### 3. Changing model parameters
 Our models also include an optional configuration file, `config.txt`, which can be found in the model's directory, e.g. `/models/end2end/config.txt` is a configuration file for the end2end model: 

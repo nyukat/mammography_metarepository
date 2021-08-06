@@ -5,6 +5,7 @@ from math import sqrt
 import matplotlib.pyplot as plt
 import pandas as pd
 import sklearn.metrics as metrics
+import numpy as np
 from numpy import average, std
 from scipy.stats import t
 from sklearn.utils import resample
@@ -19,29 +20,32 @@ def breast_or_image_level(prediction_file):
 
 
 def calc_confidence_interval(sample, confidence=0.95):
-    mean = average(sample)
-    # evaluate sample variance by setting delta degrees of freedom (ddof) to
-    # 1. The degree used in calculations is N - ddof
-    stddev = std(sample, ddof=1)
-    # Get the endpoints of the range that contains 95% of the distribution
-    t_bounds = t.interval(confidence, len(sample) - 1)
-    # sum mean to the confidence interval
-    ci = [mean + critval * stddev / sqrt(len(sample)) for critval in t_bounds]
-    # Get the diff between the middle and edge of the interval
-    diff = ci[1] - mean
-    return mean, diff
+    sorted_scores = np.array(sample)
+    sorted_scores.sort()
+
+    margin = (1 - confidence) / 2  # e.g. 0.025 for 0.95 confidence range
+    confidence_lower = sorted_scores[int(margin * len(sorted_scores))]  # e.g. 0.025
+    confidence_upper = sorted_scores[int((1 - margin) * len(sorted_scores))]  # e.g. 0.975
+
+    return confidence_lower, confidence_upper
 
 
 def generate_statistics(labels, predictions, name, bootstrapping=False):
+    roc_auc = metrics.roc_auc_score(labels, predictions)
+    roc_curve_path = plot_roc_curve(predictions, labels, name)
+    precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
+    pr_curve_path = plot_pr_curve(precision, recall, name)
+    pr_auc = metrics.auc(recall, precision)
 
     print_str = "\nImage-level metrics:" if 'image_level' in name else "\nBreast-level metrics:"
+    print(print_str)
+
     if bootstrapping:
         n_samples = len(labels)
         if n_samples < 8:
-            print("Bootstrapping only available with at least 8 samples.")
+            print("Bootstrapping is calculated only when there are more than 8 samples.")
         else:
-            # n_samples = min(n_samples, int((50 + n_samples) / 2))
-            n_bootstraps = max(50, int(100000 / n_samples))
+            n_bootstraps = 2000
 
             b_roc_auc_list = []
             b_pr_auc_list = []
@@ -59,22 +63,16 @@ def generate_statistics(labels, predictions, name, bootstrapping=False):
                 b_pr_auc = metrics.auc(recall, precision)
                 b_pr_auc_list.append(b_pr_auc)
 
-            a, b = calc_confidence_interval(b_roc_auc_list)
-            c, d = calc_confidence_interval(b_pr_auc_list)
-            print(f"{print_str}",
-                  f"\n AUROC: {a:.3f} " + u"\u00B1" + f" {b:.3f}",
-                  f"\n AUPRC: {c:.3f} " + u"\u00B1" + f" {d:.3f}")
-
-    roc_auc = metrics.roc_auc_score(labels, predictions)
-    roc_curve_path = plot_roc_curve(predictions, labels, name)
-    precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
-    pr_curve_path = plot_pr_curve(precision, recall, name)
-    pr_auc = metrics.auc(recall, precision)
-
-    print(f"{print_str}",
-          f"\n AUROC: {roc_auc:.3f}",
-          f"\n AUPRC: {pr_auc:.3f}",
-          f"\n ROC Plot: {roc_curve_path}",
+            roc_CI_lower, roc_CI_upper = calc_confidence_interval(b_roc_auc_list)
+            pr_CI_lower, pr_CI_upper = calc_confidence_interval(b_pr_auc_list)
+            print(f"\n AUROC: {roc_auc:.3f} (95% CI: {roc_CI_lower:.3f}-{roc_CI_upper:.3f})",
+                  f"\n AUPRC: {pr_auc:.3f} (95% CI: {pr_CI_lower:.3f}-{pr_CI_upper:.3f})",
+                  f"\n Confidence intervals calculated with bootstrap with {n_bootstraps} replicates.")
+    else:
+        print(f"\n AUROC: {roc_auc:.3f}",
+              f"\n AUPRC: {pr_auc:.3f}")
+    
+    print(f"\n ROC Plot: {roc_curve_path}",
           f"\n PRC Plot: {pr_curve_path}")
 
 
@@ -175,8 +173,9 @@ def plot_roc_curve(preds, labels, name):
 
 
 def main(pickle_file, prediction_file, bootstrapping):
-
-    if str(bootstrapping.lower()) == 'true':
+    if str(bootstrapping.lower()) == 'no_bootstrap':
+        bootstrapping = False
+    else:
         bootstrapping = True
     breast_or_image = breast_or_image_level(prediction_file)
     if breast_or_image == "image":
