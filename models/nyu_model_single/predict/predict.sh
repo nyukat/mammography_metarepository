@@ -3,7 +3,7 @@
 # Generate predictions using the image level NYU Breast Cancer Classifier model
 
 HEATMAP_BATCH_SIZE="100"
-NUM_EPOCHS="10"
+NUM_EPOCHS="1"
 USE_HEATMAPS="False"
 
 CONTAINER_PICKLE_FILE=$1

@@ -5,7 +5,7 @@ This metarepository is a project aimed to accelerate and standardize research an
 1. Developers of deep learning models can provide their implementations in the form of Docker images. This enables fair comparison with other models on various datasets.
 2. Data owners can evaluate multiple state-of-the-art models with very little user involvement and without the need to implement the models or their preprocessing pipelines.
 
-![Overview of metarepository](figs/metarepository-overview.JPG "Overview")
+![Overview of metarepository](figs/metarepository-overview.png "Overview")
 
 ## Prerequisites
  * Docker 19.03.6
@@ -199,12 +199,11 @@ Breast-level prediction
     * [Repository](https://github.com/lishen/end2end-all-conv)
 
 ### What metrics are returned by models?
-The following three metrics will be computed and outputted to the terminal:
-  * [roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
-  * [average_precision_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html)
-  * pr_auc_score
+The following two metrics will be computed and outputted to the terminal:
+  * [AUC ROC (area under the receiver operating characteristic curve)](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
+  * [AUC PR (area under the precision-recall curve)](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_curve.html)
   
-In addition to the above metrics, the metarepository will also generate precision-recall curves and ROC curves at both the image- (if applicable) and breast-levels. The locations of these images will be outputted to the terminal along with the metrics.
+In addition to the above metrics, the metarepository will also generate plots for precision-recall curves and ROC curves at both the image- (if applicable) and breast-levels. The locations of these images will be outputted to the terminal along with the metrics. Also, we provide 95% confidence intervals calculated by bootstrapping with 2,000 replicates.
 
 ### What results should be expected on the sample images with the supported models?
 
@@ -237,5 +236,7 @@ The reason for this error is when pickled data list file (e.g. data.pkl) is save
 
 
 ## Submission Policy
+We will evaluate each model contributed to the meta-repository up to three times on all data sets. We offer the two extra evaluations to enable some minimal debugging. We will also consider evaluating private models not contributed to the meta-repository on a case-by-case basis.
+
 ## Reference
 

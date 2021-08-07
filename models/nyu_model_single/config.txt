@@ -3,5 +3,5 @@ CONTAINER_PREDICT_PATH="/home/bcc/breast_cancer_classifier"
 
 # Other arguments
 HEATMAP_BATCH_SIZE=100
-NUM_EPOCHS=10
+NUM_EPOCHS=1
 USE_HEATMAPS=False
