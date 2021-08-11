@@ -1,11 +1,11 @@
-# NYU Breast Cancer Classification Metarepository
+# Meta-repository of screening mammography classifiers
 ## Introduction
 This metarepository is a project aimed to accelerate and standardize research and evaluation in deep learning for screening mammography. It includes ready-to-use Docker images of several screening mammography models. There are two main usecases for the metarepository:
 
 1. Developers of deep learning models can provide their implementations in the form of Docker images. This enables fair comparison with other models on various datasets.
 2. Data owners can evaluate multiple state-of-the-art models with very little user involvement and without the need to implement the models or their preprocessing pipelines.
 
-![Overview of metarepository](figs/overview.png "Overview")
+![Overview of metarepository](figs/metarepository-overview.png "Overview")
 
 ## Prerequisites
  * Docker 19.03.6
@@ -22,22 +22,22 @@ To avoid running the Docker container as root and avoid permission issues when a
 
 *Simple setup: single user*
 
-If it does not matter whether other users will have access to dockerized models, simply fill `user.txt` file with your username and user ID. On Linux, you can get your user ID by running `id -u <your_username>` command. Your `user.txt` file will look like the following:
+If it does not matter whether other users will have access to dockerized models, simply fill `users.txt` file with your username and user ID. On Linux, you can get your user ID by running `id -u <your_username>` command. Your `users.txt` file will look like the following (please note *two exact lines*):
 
 ```
-username, user_id
-username, user_id
+username,user_id
+username,user_id
 ```
 
 *Access for multiple users*
 
-If you would like for multiple users to run models, they need to belong to the same group. For example, if `user1`, `user2`, and `user3` belong to `group1` and should be able to run the containers, then `user.txt` will look like the following:
+If you would like for multiple users to run models, they need to belong to the same group. For example, if `user1`, `user2`, and `user3` belong to `group1` and should be able to run the containers, then `users.txt` will look like the following:
 
 ```
-groupname, group_id
-username1, user_id1
-username2, user_id2
-username3, user_id2
+groupname,group_id
+username1,user_id1
+username2,user_id2
+username3,user_id2
 ```
 
 When creating Dockerfiles for your own model, we suggest you take a similar approach to avoid running the container with root privileges.
@@ -46,21 +46,22 @@ When creating Dockerfiles for your own model, we suggest you take a similar appr
 
 In order to run a model with included sample data, you need to populate the `users.txt` file, and then run the `run.sh` bash script, providing basic arguments:
 
-    bash run.sh <model_name> <experiment_name> <img_path> <prepr_img_path> <label_path> <result_path> <device> <gpu_number>
+    bash run.sh <model_name> <experiment_name> <img_path> <prepr_img_path> <label_path> <result_path> <device> <gpu_number> <bootstrap_flag>
 
 where the arguments represent:
-* `model_name` - Name of the model you want to evaluate. This is equivalent to a directory name in the `/models/` folder. As of now, available models are: `end2end`, `frcnn_cad`, `nyu_gmic`, `nyu_model`, `nyu_model_single`
-* `experiment_name` - Name of the experiment; will be used to save results
+* `model_name` - name of the model you want to evaluate. This is equivalent to a directory name in the `/models/` folder. As of now, available models are: `end2end`, `frcnn_cad`, `nyu_glam`, `nyu_gmic`, `nyu_model`, `nyu_model_single`
+* `experiment_name` - name of the experiment; will be used to save results
 * `img_path` - path to the directory with input images
 * `prepr_img_path` - path to a directory where the preprocessed images created by the model/container will be stored
 * `label_path` - path to a pickle (.pkl) that contains the labels, see below for details
 * `result_path` - directory where the results (predictions and figures) should be saved
-* `device` - Either `gpu` or `cpu`. (Note: `frcnn_cad` model is GPU-only)
-* `gpu_number` - Which gpu to use, e.g. `0`, not required if `device==cpu`.
+* `device` - either `gpu` or `cpu`. (Note: `frcnn_cad` model is GPU-only)
+* `gpu_number` - which gpu to use, e.g. `0`, not required if `device==cpu`.
+* `bootstrap_flag` - by default, your results will have 95% confidence intervals calculated for areas under curves. If you do _not_ want bootstrap to be calculated, set the value to `no_bootstrap`
 
 An example command to run a NYU GMIC model on GPU:0 with the sample data included in this repository would look like the following:
 
-    bash run.sh nyu_gmic experiment01 sample_data/images/ sample_data/preprocessed_images/ sample_data/data.pkl predictions/ gpu 0
+    bash run.sh nyu_gmic experiment01 sample_data/images/ sample_data/preprocessed_images/ sample_data/data.pkl predictions/ gpu 0 no_bootstrap
   
 ### 3. Changing model parameters
 Our models also include an optional configuration file, `config.txt`, which can be found in the model's directory, e.g. `/models/end2end/config.txt` is a configuration file for the end2end model: 
@@ -77,8 +78,35 @@ It is specific to the model and contains variables/parameters that can be change
 ## How do I use my own data set?
 If you are in possession of a data set that you would like to use with the included models, please read the following. There are two parts of a data set that the metarepository expects: *images* and a *data list*.
 
-*Images* must be saved in a PNG format and stored in a common directory.
+### Images
+*Images* must be saved in a PNG format and stored in a common directory. Models expect 16-bit PNGs. You can use a sample snippet to convert DICOM files to 16-bit PNGs as follows:
 
+```python
+import png
+import pydicom
+def save_dicom_image_as_png(dicom_filename, png_filename, bitdepth=12):
+    """
+    Save 12-bit mammogram from dicom as rescaled 16-bit png file.
+    :param dicom_filename: path to input dicom file.
+    :param png_filename: path to output png file.
+    :param bitdepth: bit depth of the input image. Set it to 12 for 12-bit mammograms.
+                     Set to 16 for 16-bit mammograms, etc.
+                     Make sure you are using correct bitdepth!
+    """
+    image = pydicom.read_file(dicom_filename).pixel_array
+    with open(png_filename, 'wb') as f:
+        writer = png.Writer(
+            height=image.shape[0],
+            width=image.shape[1],
+            bitdepth=bitdepth,
+            greyscale=True
+        )
+        writer.write(f, image.tolist())
+```
+
+If you are converting DICOM images into PNGs, make sure that mammograms are correctly presented after conversion. If there are any VOI LUT functions or Photometric Interpretation conversions necessary, you need to make sure the PNG represents an image after applying those.
+
+### Data list
 The *data list* is a pickle file (e.g. data.pkl) containing information for each exam. More specifically, the data list is a pickled list of dictionaries, where each dictionary represents a screening mammography exam. The information in one of these dictionaries is shown below.
 
 ```python
@@ -155,24 +183,27 @@ Breast-level prediction
     * [Repository](https://github.com/nyukat/breast_cancer_classifier)
 
 * GMIC (image-level) (`nyu_gmic`)
-    * [Paper](https://arxiv.org/pdf/1906.02846.pdf)
+    * [Paper](https://www.sciencedirect.com/science/article/pii/S1361841520302723)
     * [Repository](https://github.com/nyukat/GMIC)
 
-* frcnn_cad (breast-level) (`frcnn_cad`)
+* GLAM (image-level) (`nyu_glam`)
+    * [Paper](https://openreview.net/pdf?id=nBT8eNF7aXr)
+    * [Repository](https://github.com/nyukat/GLAM)
+
+* Faster R-CNN based (breast-level) (`frcnn_cad`)
     * [Paper](https://www.nature.com/articles/s41598-018-22437-z)
     * [Repository](https://github.com/riblidezso/frcnn_cad)
 
-* end2end-all-conv (breast-level) (`end2end`)
+* End2end (breast-level) (`end2end`)
     * [Paper](https://arxiv.org/pdf/1708.09427.pdf)
     * [Repository](https://github.com/lishen/end2end-all-conv)
 
 ### What metrics are returned by models?
-The following three metrics will be computed and outputted to the terminal:
-  * [roc_auc_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
-  * [average_precision_score](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html)
-  * pr_auc_score
+The following two metrics will be computed and outputted to the terminal:
+  * [AUC ROC (area under the receiver operating characteristic curve)](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
+  * [AUC PR (area under the precision-recall curve)](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_curve.html)
   
-In addition to the above metrics, the metarepository will also generate precision-recall curves and ROC curves at both the image- (if applicable) and breast-levels. The locations of these images will be outputted to the terminal along with the metrics.
+In addition to the above metrics, the metarepository will also generate plots for precision-recall curves and ROC curves at both the image- (if applicable) and breast-levels. The locations of these images will be outputted to the terminal along with the metrics. Also, we provide 95% confidence intervals calculated by bootstrapping with 2,000 replicates.
 
 ### What results should be expected on the sample images with the supported models?
 
@@ -180,26 +211,40 @@ Please keep in mind that below results are shown only for reproduction purposes.
 
 ##### Image level:
 
-| Model | ROC AUC  | Average precision | PR AUC |
-| ----------------- | ----- | ----- | ----- |
-| nyu_gmic          | 0.867 | 0.859 | 0.851 |
-| nyu_model         | -     | -     | -     |
-| nyu_model_single  | 0.867 | 0.815 | 0.817 |
-| end2end           | 0.483 | 0.518 | 0.483 |
-| frcnn_cad         | 0.733 | 0.662 | 0.627 |
+| Model | ROC AUC  | PR AUC |
+| ----------------- | ----- | ----- |
+| nyu_glam          | 0.7   | 0.451 |
+| nyu_gmic          | 0.867 | 0.851 |
+| nyu_model         | -     | -     |
+| nyu_model_single  | 0.867 | 0.817 |
+| end2end           | 0.483 | 0.483 |
+| frcnn_cad         | 0.733 | 0.627 |
 
 ##### Breast level:
 
-| Model | ROC AUC  | Average precision | PR AUC |
-| ----------------- | ----- | ----- | ----- |
-| nyu_gmic          | 0.867 | 0.867 | 0.85  |
-| nyu_model         | 0.867 | 0.866 | 0.85  |
-| nyu_model_single  | 0.933 | 0.916 | 0.903 |
-| end2end           | 0.6   | 0.5   | 0.372 |
-| frcnn_cad         | 0.667 | 0.667 | 0.622 |
+| Model | ROC AUC  | PR AUC |
+| ----------------- | ----- | ----- |
+| nyu_glam          | 0.733 | 0.461 |
+| nyu_gmic          | 0.867 | 0.85  |
+| nyu_model         | 0.867 | 0.85  |
+| nyu_model_single  | 0.933 | 0.903 |
+| end2end           | 0.6   | 0.372 |
+| frcnn_cad         | 0.667 | 0.622 |
 
+### I am getting `ValueError: unsupported pickle protocol: 5`
+The reason for this error is when pickled data list file (e.g. data.pkl) is saved with Python 3.8 or later and highest (5) protocol. Models in the metarepository do not have the support of pickle protocol 5. Please save your data list file with protocol 4 or 3, e.g. `pickle.dump(datalist_dictionary, file, protocol=4)`.
 
 
 ## Submission Policy
-## Reference
+We will evaluate each model contributed to the meta-repository up to three times on all data sets. We offer the two extra evaluations to enable some minimal debugging. We will also consider evaluating private models not contributed to the meta-repository on a case-by-case basis.
 
+## Reference
+Our article, "*Meta-repository of screening mammography classifiers*", is now available as a preprint: https://arxiv.org/abs/2108.04800.
+```
+@article{stadnick2021metarepository,
+   title = {Meta-repository of screening mammography classifiers}, 
+   author = {Benjamin Stadnick and Jan Witowski and Vishwaesh Rajiv and Jakub Chłędowski and Farah E. Shamout and Kyunghyun Cho and Krzysztof J. Geras},
+   journal = {arxiv:2108.04800} 
+   year = {2021}
+}
+```

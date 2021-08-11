@@ -10,7 +10,7 @@ DEVICE=$5
 PREPROCESSED_FOLDER="$6/end2end_${NAME}_preprocessed_images"
 
 MEAN_PIXEL_INTENSITY="44.4"
-MODEL="inbreast_vgg16_[512-512-1024]x2_hybrid.h5"
+MODEL="ddsm_resnet50_s10_[512-512-1024]x2.h5"
 NUM_PROCESSES="10"
 PREPROCESS_FLAG="True"
 

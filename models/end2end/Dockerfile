@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y libglib2.0-0\
 # Install pip3
 WORKDIR /home/pip_install
 
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py \
+RUN curl https://bootstrap.pypa.io/pip/3.5/get-pip.py -o get-pip.py \
     && python3 get-pip.py \
     && rm get-pip.py
 
@@ -28,7 +28,7 @@ RUN pip install gdown
 
 # Create two virtualenvs for separate CPU and GPU installations
 RUN python3 -m venv /opt/venv-gpu
-RUN /opt/venv-gpu/bin/pip install --upgrade pip
+RUN /opt/venv-gpu/bin/pip install --upgrade "pip < 21.0"
 RUN /opt/venv-gpu/bin/pip install pip install Keras==2.0.5 \
     numpy==1.16.4 \
     opencv-python==4.1.0.25 \
@@ -40,7 +40,7 @@ RUN /opt/venv-gpu/bin/pip install pip install Keras==2.0.5 \
     tqdm==4.53.0
 
 RUN python3 -m venv /opt/venv-cpu
-RUN /opt/venv-cpu/bin/pip install --upgrade pip
+RUN /opt/venv-cpu/bin/pip install --upgrade "pip < 21.0"
 RUN /opt/venv-cpu/bin/pip install pip install Keras==2.0.5 \
     numpy==1.16.4 \
     opencv-python==4.1.0.25 \

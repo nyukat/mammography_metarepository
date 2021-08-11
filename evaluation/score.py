@@ -1,9 +1,14 @@
 import pickle
 import sys
+from math import sqrt
 
 import matplotlib.pyplot as plt
 import pandas as pd
 import sklearn.metrics as metrics
+import numpy as np
+from numpy import average, std
+from scipy.stats import t
+from sklearn.utils import resample
 
 
 def breast_or_image_level(prediction_file):
@@ -14,27 +19,73 @@ def breast_or_image_level(prediction_file):
         return "image"
 
 
-def generate_statistics(labels, predictions, name):
+def calc_confidence_interval(sample, confidence=0.95):
+    sorted_scores = np.array(sample)
+    sorted_scores.sort()
+
+    margin = (1 - confidence) / 2  # e.g. 0.025 for 0.95 confidence range
+    confidence_lower = sorted_scores[int(margin * len(sorted_scores))]  # e.g. 0.025
+    confidence_upper = sorted_scores[int((1 - margin) * len(sorted_scores))]  # e.g. 0.975
+
+    return confidence_lower, confidence_upper
+
+
+def generate_statistics(labels, predictions, name, bootstrapping=False):
     roc_auc = metrics.roc_auc_score(labels, predictions)
     roc_curve_path = plot_roc_curve(predictions, labels, name)
     precision, recall, thresholds = metrics.precision_recall_curve(labels, predictions)
     pr_curve_path = plot_pr_curve(precision, recall, name)
     pr_auc = metrics.auc(recall, precision)
-    average_precision = metrics.average_precision_score(labels, predictions)
 
-    return roc_auc, pr_auc, average_precision, roc_curve_path, pr_curve_path
+    print_str = "\nImage-level metrics:" if 'image_level' in name else "\nBreast-level metrics:"
+    print(print_str)
+
+    if bootstrapping:
+        n_samples = len(labels)
+        if n_samples < 8:
+            print("Bootstrapping is calculated only when there are more than 8 samples.")
+        else:
+            n_bootstraps = 2000
+
+            b_roc_auc_list = []
+            b_pr_auc_list = []
+            for i in range(n_bootstraps):
+                boot = resample(list(zip(labels, predictions)), replace=True, n_samples=n_samples)
+                b_labels, b_predictions = list(zip(*boot))
+
+                if len(list(set(b_labels))) == 1:
+                    n_bootstraps -= 1
+                    continue
+
+                b_roc_auc = metrics.roc_auc_score(b_labels, b_predictions)
+                b_roc_auc_list.append(b_roc_auc)
+                precision, recall, thresholds = metrics.precision_recall_curve(b_labels, b_predictions)
+                b_pr_auc = metrics.auc(recall, precision)
+                b_pr_auc_list.append(b_pr_auc)
+
+            roc_CI_lower, roc_CI_upper = calc_confidence_interval(b_roc_auc_list)
+            pr_CI_lower, pr_CI_upper = calc_confidence_interval(b_pr_auc_list)
+            print(f"\n AUROC: {roc_auc:.3f} (95% CI: {roc_CI_lower:.3f}-{roc_CI_upper:.3f})",
+                  f"\n AUPRC: {pr_auc:.3f} (95% CI: {pr_CI_lower:.3f}-{pr_CI_upper:.3f})",
+                  f"\n Confidence intervals calculated with bootstrap with {n_bootstraps} replicates.")
+    else:
+        print(f"\n AUROC: {roc_auc:.3f}",
+              f"\n AUPRC: {pr_auc:.3f}")
+    
+    print(f"\n ROC Plot: {roc_curve_path}",
+          f"\n PRC Plot: {pr_curve_path}")
 
 
-def get_image_level_scores(prediction_file):
+def get_image_level_scores(prediction_file, bootstrapping=False):
     prediction_df = pd.read_csv(prediction_file, header=0)
     predictions = prediction_df['malignant_pred'].tolist()
     labels = prediction_df['malignant_label'].tolist()
     name = prediction_file.split('.')[0] + "_image_level"
 
-    return generate_statistics(labels, predictions, name)
+    generate_statistics(labels, predictions, name, bootstrapping)
 
 
-def get_breast_level_scores(prediction_file, pickle_file):
+def get_breast_level_scores(prediction_file, pickle_file, bootstrapping=False):
     prediction_df = pd.read_csv(prediction_file, header=0)
     predictions = prediction_df['left_malignant'].tolist() + prediction_df['right_malignant'].tolist()
     with open(pickle_file, 'rb') as f:
@@ -48,10 +99,10 @@ def get_breast_level_scores(prediction_file, pickle_file):
 
     name = prediction_file.split('.')[0] + "_breast_level"
 
-    return generate_statistics(labels, predictions, name)
+    generate_statistics(labels, predictions, name, bootstrapping)
 
 
-def get_breast_level_scores_from_image_level(prediction_file, pickle_file):
+def get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping=False):
     with open(pickle_file, 'rb') as f:
         exam_dict = pickle.load(f)
 
@@ -70,7 +121,7 @@ def get_breast_level_scores_from_image_level(prediction_file, pickle_file):
         right_images = 0
         for v in ['L-CC', 'L-MLO', 'R-CC', 'R-MLO']:
             # Skip over views that don't have any images
-            if len(d[v]) == 0:
+            if v not in d or len(d[v]) == 0:
                 continue
 
             if v[0] == 'L':
@@ -95,7 +146,7 @@ def get_breast_level_scores_from_image_level(prediction_file, pickle_file):
     labels = left_labels + right_labels
     name = prediction_file.split('.')[0] + "_breast_level"
 
-    return generate_statistics(labels, predictions, name)
+    generate_statistics(labels, predictions, name, bootstrapping)
 
 
 def plot_pr_curve(precision, recall, name):
@@ -121,23 +172,20 @@ def plot_roc_curve(preds, labels, name):
     return save_path
 
 
-def main(pickle_file, prediction_file):
+def main(pickle_file, prediction_file, bootstrapping):
+    if str(bootstrapping.lower()) == 'no_bootstrap':
+        bootstrapping = False
+    else:
+        bootstrapping = True
     breast_or_image = breast_or_image_level(prediction_file)
     if breast_or_image == "image":
-        roc_auc_bl, pr_auc_bl, average_precision_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores_from_image_level(prediction_file,
-                                                                                                                                    pickle_file)
-        roc_auc_il, pr_auc_il, average_precision_il, roc_curve_path_il, pr_curve_path_il = get_image_level_scores(prediction_file)
-        print("Image-level metrics \n Average precision: {} \n AUROC: {} \n AUPRC: {} \n ROC Plot: {} \n PRC Plot: {}".format(average_precision_il, roc_auc_il,
-                                                                                                                              pr_auc_il, roc_curve_path_il,
-                                                                                                                              pr_curve_path_il))
+        get_breast_level_scores_from_image_level(prediction_file, pickle_file, bootstrapping)
+        get_image_level_scores(prediction_file, bootstrapping)
     else:
-        roc_auc_bl, pr_auc_bl, average_precision_bl, roc_curve_path_bl, pr_curve_path_bl = get_breast_level_scores(prediction_file, pickle_file)
+        get_breast_level_scores(prediction_file, pickle_file, bootstrapping)
 
-    print("Breast-level metrics \n Average precision: {} \n AUROC: {} \n AUPRC: {} \n ROC Plot: {} \n PRC Plot: {}".format(average_precision_bl, roc_auc_bl,
-                                                                                                                           pr_auc_bl, roc_curve_path_bl,
-                                                                                                                           pr_curve_path_bl))
     print("Prediction file: {}".format(prediction_file))
 
 
 if __name__ == "__main__":
-    main(sys.argv[1], sys.argv[2])
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
