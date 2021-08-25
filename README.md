@@ -244,7 +244,7 @@ Our article, "*Meta-repository of screening mammography classifiers*", is now av
 @article{stadnick2021metarepository,
    title = {Meta-repository of screening mammography classifiers}, 
    author = {Benjamin Stadnick and Jan Witowski and Vishwaesh Rajiv and Jakub Chłędowski and Farah E. Shamout and Kyunghyun Cho and Krzysztof J. Geras},
-   journal = {arxiv:2108.04800} 
+   journal = {arxiv:2108.04800}, 
    year = {2021}
 }
 ```
