@@ -143,24 +143,25 @@ In addition to these three things, you may also include a help directory, which 
 Your model should work with the sample data provided and `run.sh`. If your model generates image-level predictions, it should include the following columns and be saved as a csv file.
 
 Image-level prediction
-image_index  |  malignant_pred  |  malignant_label
--------------|---------------|------------------
-0_L-CC       |  0.0081          |  0
-0_R-CC       |  0.3259          |  0
-0_L-MLO      |  0.0335          |  0
-0_R-MLO      |  0.1812          |  0
-1_L-CC       |  0.0168          |  0
-1_R-CC       |  0.9910          |  1
-1_L-MLO      |  0.0139          |  0
-1_R-MLO      |  0.9308          |  1
-2_L-CC       |  0.0227          |  0
-2_R-CC       |  0.0603          |  0
-2_L-MLO      |  0.0093          |  0
-2_R-MLO      |  0.0231          |  0
-3_L-CC       |  0.9326          |  1
-3_R-CC       |  0.1603          |  0
-3_L-MLO      |  0.7496          |  1
-3_R-MLO      |  0.0507          |  0
+
+| image_index  |  malignant_pred  |  malignant_label  |
+| ------------ | ---------------- | ----------------- |
+| 0_L-CC       |  0.0081          |  0                |
+| 0_R-CC       |  0.3259          |  0                |
+| 0_L-MLO      |  0.0335          |  0                |
+| 0_R-MLO      |  0.1812          |  0                |
+| 1_L-CC       |  0.0168          |  0                |
+| 1_R-CC       |  0.9910          |  1                |
+| 1_L-MLO      |  0.0139          |  0                |
+| 1_R-MLO      |  0.9308          |  1                |
+| 2_L-CC       |  0.0227          |  0                |
+| 2_R-CC       |  0.0603          |  0                |
+| 2_L-MLO      |  0.0093          |  0                |
+| 2_R-MLO      |  0.0231          |  0                |
+| 3_L-CC       |  0.9326          |  1                |
+| 3_R-CC       |  0.1603          |  0                |
+| 3_L-MLO      |  0.7496          |  1                |
+| 3_R-MLO      |  0.0507          |  0                |
 
 If you model outputs breast-level predictions, it should include the following columns and be saved as a csv.
 
@@ -176,7 +177,7 @@ Breast-level prediction
 
 ## FAQ
 ### Which models are currently available in the metarepository?
-* Breast Cancer Classifier:
+* DMV-CNN:
     * breast-level (`nyu_model`)
     * image-level (`nyu_model_single`)
     * [Paper](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8861376)
@@ -211,7 +212,7 @@ Please keep in mind that below results are shown only for reproduction purposes.
 
 ##### Image level:
 
-| Model | ROC AUC  | PR AUC |
+| Model             | AUROC | AUPRC |
 | ----------------- | ----- | ----- |
 | nyu_glam          | 0.7   | 0.451 |
 | nyu_gmic          | 0.867 | 0.851 |
@@ -222,7 +223,7 @@ Please keep in mind that below results are shown only for reproduction purposes.
 
 ##### Breast level:
 
-| Model | ROC AUC  | PR AUC |
+| Model             | AUROC | AUPRC |
 | ----------------- | ----- | ----- |
 | nyu_glam          | 0.733 | 0.461 |
 | nyu_gmic          | 0.867 | 0.85  |
