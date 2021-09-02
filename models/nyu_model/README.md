@@ -1,4 +1,4 @@
-### NYU Multiview Model 
+### NYU DMV-CNN
 
 * The original repository is available here: https://github.com/nyukat/breast_cancer_classifier
 * The model uses all 4 views typically found in a mammography exam: left craniocaudal (L-CC), right cranniocaudal (R-CC), left mediolateral oblique (L-MLO), right mediolateral oblique (R-MLO). It generates two sets of predictions, one for each breast. Each set of predictions has a probability that the breast contains a benign lesion and a probability that the breast contains a malignant lesion.
