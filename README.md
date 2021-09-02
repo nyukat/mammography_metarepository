@@ -142,7 +142,7 @@ In addition to these three things, you may also include a help directory, which 
 
 Your model should work with the sample data provided and `run.sh`. If your model generates image-level predictions, it should include the following columns and be saved as a csv file.
 
-Image-level prediction
+_Image-level predictions_
 
 | image_index  |  malignant_pred  |  malignant_label  |
 | ------------ | ---------------- | ----------------- |
@@ -163,9 +163,9 @@ Image-level prediction
 | 3_L-MLO      |  0.7496          |  1                |
 | 3_R-MLO      |  0.0507          |  0                |
 
-If you model outputs breast-level predictions, it should include the following columns and be saved as a csv.
+If your model outputs breast-level predictions, it should include the following columns and be saved as a csv.
 
-Breast-level prediction
+_Breast-level predictions_
 
 | index | left_malignant | right_malignant |
 | ----- | -------------- | --------------- |
@@ -204,7 +204,7 @@ The following two metrics will be computed and outputted to the terminal:
   * [AUC ROC (area under the receiver operating characteristic curve)](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.roc_auc_score.html)
   * [AUC PR (area under the precision-recall curve)](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.precision_recall_curve.html)
   
-In addition to the above metrics, the metarepository will also generate plots for precision-recall curves and ROC curves at both the image- (if applicable) and breast-levels. The locations of these images will be outputted to the terminal along with the metrics. Also, we provide 95% confidence intervals calculated by bootstrapping with 2,000 replicates.
+In addition to the above metrics, the metarepository will also generate plots for precision-recall curves and ROC curves at both the image (if applicable) and breast-levels. The locations of these images will be outputted to the terminal along with the metrics. Also, we provide 95% confidence intervals calculated by bootstrapping with 2,000 replicates.
 
 ### What results should be expected on the sample images with the supported models?
 
