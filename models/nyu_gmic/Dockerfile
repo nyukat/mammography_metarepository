@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y libglib2.0-0\
     vim \
     git \
     bash \
-    python3.6 \
+    python3.7 \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
