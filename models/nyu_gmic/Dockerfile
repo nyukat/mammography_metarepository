@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y libglib2.0-0\
     vim \
     git \
     bash \
-    python3.7 \
+    python3.6 \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
@@ -23,6 +23,7 @@ RUN sed -i "149i \                if len(datum[view]) == 0: continue" /home/gmic
 
 # Install dependencies
 RUN pip3 install --no-cache-dir --trusted-host pypi.python.org h5py==2.8.0 \
+    pillow==8.4
     imageio==2.4.1 \
     numpy==1.14.3 \
     opencv-python==3.4.2.17 \
