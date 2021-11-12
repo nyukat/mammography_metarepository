@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y libglib2.0-0\
     git \
     bash \
     python3.7 \
-    python3-pip \
+    python3.7-pip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/gmic
