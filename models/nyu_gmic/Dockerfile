@@ -1,5 +1,4 @@
-FROM pure/python:3.7-cuda10.1-base
-#FROM nvidia/cuda:10.1-base-ubuntu18.04
+FROM nvidia/cuda:10.1-base-ubuntu18.04
 
 RUN apt-get update && apt-get install -y libglib2.0-0\
     libsm6 \
@@ -9,7 +8,7 @@ RUN apt-get update && apt-get install -y libglib2.0-0\
     git \
     bash \
     python3.7 \
-    python3.7-pip \
+    python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /home/gmic
