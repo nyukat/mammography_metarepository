@@ -27,7 +27,6 @@ RUN pip3 install --no-cache-dir --trusted-host pypi.python.org h5py==2.8.0 \
     opencv-python==3.4.2.17 \
     pandas==0.22.0 \
     scipy==1.0.0 \
-    torchvision==0.2.1 \
     tqdm==4.19.8
 
 RUN wget https://download.pytorch.org/whl/cu92/torch-0.4.1-cp36-cp36m-linux_x86_64.whl && pip3 install torch-0.4.1-cp36-cp36m-linux_x86_64.whl
