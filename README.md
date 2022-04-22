@@ -174,6 +174,8 @@ _Breast-level predictions_
 | 2     | 0.2325         | 0.1061          |
 | 3     | 0.0909         | 0.2579          |
 
+## Results for the NYU reader study subset
+We additionally provide predictions of probability of malignancy of all models and readers on the NYU Reader Study subset. You can find these results at `/reader_study/results.pkl`. To import them, please use pandas, i.e. `df = pandas.read_pickle('results.pkl')`. Please note that these predictions are made on a breast-level, which is why the table with results contains 1,440 rows (720 exams x 2 breasts).
 
 ## FAQ
 ### Which models are currently available in the metarepository?
