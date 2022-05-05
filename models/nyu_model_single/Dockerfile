@@ -1,6 +1,17 @@
 FROM nvidia/cuda:10.1-base-ubuntu18.04
 
-RUN apt-get update && apt-get install -y libglib2.0-0\
+# GPG key error fix
+# ref: https://github.com/nyukat/mammography_metarepository/issues/24
+# ref: https://github.com/NVIDIA/nvidia-docker/issues/1631
+RUN rm /etc/apt/sources.list.d/cuda.list
+RUN rm /etc/apt/sources.list.d/nvidia-ml.list
+RUN apt-key del 7fa2af80
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/3bf863cc.pub
+RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/7fa2af80.pub
+
+# Proceed with building
+RUN apt-get update
+RUN apt-get install -y libglib2.0-0\
     libsm6 \
     libxext6 \
     libxrender-dev \
