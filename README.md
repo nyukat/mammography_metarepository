@@ -40,11 +40,12 @@ First, use the command `id` in bash to get all the info you need:
 jakub@jakub:~/mammography_metarepository$ id
   uid=1000(jakub) gid=1000(jakub) ...
 ```
-You can use the above information to update the `users.txt` file:
+Then, you can use the above information to update the `users.txt` file:
 ```
 jakub,1000
 jakub,1000
 ```
+Note, that the first line comes from `gid`, while the second one comes from `uid`.
 
 *Access for multiple users*
 
