@@ -20,24 +20,55 @@ This metarepository is a project aimed to accelerate and standardize research an
 ### 1. Set up users
 To avoid running the Docker container as root and avoid permission issues when accessing files inside the container, we create users and groups in the container that correspond to users and groups on the host machine. This is done with the `users.txt` file. It should include groupname and group_id and the usernames and user_ids of the people belonging to this group who are granted access to run the containers/models. 
 
-*Simple setup: single user*
+#### Updating `users.txt`
 
-If it does not matter whether other users will have access to dockerized models, simply fill `users.txt` file with your username and user ID. On Linux, you can get your user ID by running `id -u <your_username>` command. Your `users.txt` file will look like the following (please note *two exact lines*):
+`users.txt` structure:
 
 ```
-username,user_id
-username,user_id
+group_name,group_id
+user1,user1_id
+user2,user2_id
+...
+```
+(no spaces after comma)
+
+*Simple setup: single user*
+
+If you are a single user and it does not matter whether other users will have access to dockerized models, you can do the following.
+First, use the command `id` in bash to get all the info you need:
+```
+jakub@jakub:~/mammography_metarepository$ id
+  uid=1000(jakub) gid=1000(jakub) ...
+```
+You can use the above information to update the `users.txt` file:
+```
+jakub,1000
+jakub,1000
 ```
 
 *Access for multiple users*
 
-If you would like for multiple users to run models, they need to belong to the same group. For example, if `user1`, `user2`, and `user3` belong to `group1` and should be able to run the containers, then `users.txt` will look like the following:
+If you would like for multiple users to run models, they need to belong to the same group. Let's assume that you have a group `group1` and four users: `user1`, `user2`, `user3`, `user4` (you can read more about groups and users [here](https://www.howtogeek.com/50787/add-a-user-to-a-group-or-second-group-on-linux/)).
 
+You can check the id of your group by using `grep <group_name> /etc/group`
 ```
-groupname,group_id
-username1,user_id1
-username2,user_id2
-username3,user_id2
+user1@server:~/mammography_metarepository$ grep group1 /etc/group
+  group1:x:1234567890:user1,user2,user3,user4
+```
+
+You can check the id's of specific users with the `id <user_name>` command, for example:
+```
+user1@server:~/mammography_metarepository$ id user2
+  1000000002
+```
+
+Use the above info to fill the `users.txt` in the following way:
+```
+group1,1234567890
+user1,1000000001
+user2,1000000002
+user3,1000000003
+user4,1000000004
 ```
 
 When creating Dockerfiles for your own model, we suggest you take a similar approach to avoid running the container with root privileges.
