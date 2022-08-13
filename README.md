@@ -20,9 +20,9 @@ This metarepository is a project aimed to accelerate and standardize research an
 ### 1. Set up users
 To avoid running the Docker container as root and avoid permission issues when accessing files inside the container, we create users and groups in the container that correspond to users and groups on the host machine. This is done with the `users.txt` file. It should include groupname and group_id and the usernames and user_ids of the people belonging to this group who are granted access to run the containers/models. 
 
-#### Updating `users.txt`
+#### Creating `users.txt`
 
-`users.txt` structure:
+You can create the file on your own or copy `template_users.txt` with `cp template_users.txt users.txt` and update the latter file. Structure:
 
 ```
 group_name,group_id
@@ -30,7 +30,7 @@ user1,user1_id
 user2,user2_id
 ...
 ```
-(no spaces after comma)
+Please note, that no spaces are used after commas.
 
 *Simple setup: single user*
 
