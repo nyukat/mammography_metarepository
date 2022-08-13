@@ -1,13 +1,13 @@
 import pickle
 import sys
-from math import sqrt
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
+import numpy as np
 import pandas as pd
 import sklearn.metrics as metrics
-import numpy as np
-from numpy import average, std
-from scipy.stats import t
 from sklearn.utils import resample
 
 
