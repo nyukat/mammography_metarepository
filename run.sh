@@ -1,7 +1,6 @@
 #!/bin/bash
 
 MODEL=$1  # Name of the model, currently supported: `end2end`, `frcnn_cad`, `nyu_gmic`, `nyu_model`, `nyu_model_single`
-
 NAME=$2  # Name for experiment - used to store preprocessed images
 LOCAL_PATH_TO_IMAGES=$3  # Attach as volume - where the images are stored
 LOCAL_PATH_TO_PREPROCESSED_IMAGES=$4 # Attach as volume - where the preprocessed images will be stored. They will be stored under the NAME_EXPERIMENT pattern
@@ -42,6 +41,13 @@ expand_if_absolute () {
   fi
   echo "$(cd "$(dirname "${1}")" || exit ; pwd)/$(basename "${1}")"
 }
+
+echo "Checking if users.txt exists"
+# Check if users.txt exists. It should be created from template_users.txt.
+if [[ ! -f users.txt ]]; then
+    echo "users.txt does not exist, please check README.md on how to create it. Exiting."
+    exit
+fi
 
 echo "Expand preprocessed image path"
 ABSOLUTE_PATH_TO_PREPROCESSED_IMAGES=$(expand_if_absolute "${LOCAL_PATH_TO_PREPROCESSED_IMAGES}" "false")
