@@ -24,6 +24,7 @@ echo ${GROUPNAME}
 for user in ${ENTRIES[@]:1}
 do
     USER_INFO=($(echo $user | tr "," " "))
+    addgroup --gid ${USER_INFO[1]} ${USER_INFO[0]}
     useradd -l -u ${USER_INFO[1]} -g ${USER_INFO[1]} ${USER_INFO[0]}
     usermod -a -G ${GROUPNAME} ${USER_INFO[0]}
 done
